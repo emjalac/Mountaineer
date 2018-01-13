@@ -68,8 +68,10 @@ Mountaineer.Game.prototype = {
 		this.game.physics.box2d.revoluteJoint(arm_upperback, arm_lowerback, 0, 60, 5, -70, 0, 5, true, -20, 160, true);
 		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, true);
 		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, true);
-		this.game.physics.box2d.revoluteJoint(arm_lowerfront, pickaxe_front, 0, 70, -50, 0, 0, 0, false, -30, 20, true);
-		this.game.physics.box2d.revoluteJoint(arm_lowerback, pickaxe_back, 0, 70, -50, 0, 0, 0, false, -30, 20, true);
+		
+		this.game.physics.box2d.weldJoint(arm_lowerfront, pickaxe_front, 0, 70, -50, 0,);
+		this.game.physics.box2d.weldJoint(arm_lowerback, pickaxe_back, 0, 70, -50, 0);
+		
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperback, -30, 110, -5, -60, 0, 2, true, -45, 120, true);
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperfront, -60, 110, -5, -60, 0, 2, true, -45, 120, true);
 		this.game.physics.box2d.revoluteJoint(leg_upperfront, leg_lowerfront, 0, 80, 5, -75, 5, 10, true, -140, 10, true);
