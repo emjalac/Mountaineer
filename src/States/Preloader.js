@@ -10,14 +10,32 @@ Mountaineer.Preloader = function (game) {
 Mountaineer.Preloader.prototype = {
 	preload: function () {
 		var images = ["bomb"];
+		// Climber's body
+		var character_images = [
+			"torso",
+			"arm_upperfront",
+			"arm_lowerfront",
+			"arm_upperback",
+			"arm_lowerback",
+			"leg_upperfront",
+			"leg_lowerfront",
+			"leg_upperback",
+			"leg_lowerback",
+			"head"
+		];
+		
 		var i;
 		for(i=0;i<images.length;i++) {
 			this.load.image(images[i],"assets/images/"+images[i]+".png");
 		}
+		for(i=0;i<character_images.length;i++) {
+			this.load.image(character_images[i],"assets/images/character/"+this.capitalize(character_images[i])+".png");
+		}
 			
 		var spritesheets = [
 			{name:"play-btn",w:422,h:134,f:2},
-			{name:"back-btn",w:215,h:95,f:2}
+			{name:"back-btn",w:215,h:95,f:2},
+			{name:"play-again-btn",w:422,h:134,f:2}
 			]
 		for(i=0;i<spritesheets.length;i++){
 			var sheetName = spritesheets[i].name;
@@ -34,20 +52,6 @@ Mountaineer.Preloader.prototype = {
 		this.loadingBar = this.add.sprite(295,403,"loading-bar");
 		this.loadingBarWidth = this.loadingBar.width;
 
-		// Climber's body
-		this.load.image("torso", "assets/images/character/Torso.png");
-		this.load.image("arm_upperfront", "assets/images/character/Arm_UpperFront.png");
-		this.load.image("arm_lowerfront", "assets/images/character/Arm_LowerFront.png");
-		this.load.image("arm_upperback", "assets/images/character/Arm_UpperBack.png");
-		this.load.image("arm_lowerback", "assets/images/character/Arm_LowerBack.png");
-		this.load.image("leg_lowerback", "assets/images/character/Leg_LowerBack.png");
-		this.load.image("leg_lowerfront", "assets/images/character/Leg_LowerFront.png");
-		this.load.image("leg_upperback", "assets/images/character/Leg_UpperBack.png");
-		this.load.image("leg_upperfront", "assets/images/character/Leg_UpperFront.png");
-		this.load.image("head", "assets/images/character/Head.png")
-
-		// The ground
-
 	},
 	create: function () {
 		this.state.start("MainMenu");
@@ -63,5 +67,8 @@ Mountaineer.Preloader.prototype = {
 	destroy: function(){
 		this.loadingBar.destroy();
 		this.loadingScreen.destroy();
+	},
+	capitalize: function(str){
+	    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 	}
 };

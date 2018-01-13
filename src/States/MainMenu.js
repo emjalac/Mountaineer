@@ -18,8 +18,6 @@ Mountaineer.MainMenu.prototype = {
 		}, this, 0, 1, 0);
 		this.playButton.anchor.setTo(0.5,0.5);
 
-	
-
 		
 
 	},
