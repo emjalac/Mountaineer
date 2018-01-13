@@ -29,14 +29,26 @@ Mountaineer.Game.prototype = {
 		torso.body.restitution = 0.3;
 		// torso.body.gravity.y = 500;
 
-		var arm_upperfront = this.game.add.sprite(250, 240, "arm_upperfront");
-		var arm_upperback = this.game.add.sprite(100, 150, "arm_upperback");
-		var arm_lowerfront = this.game.add.sprite(100, 150, "arm_lowerfront");
-		var arm_lowerback = this.game.add.sprite(100, 150, "arm_lowerback");
-		this.game.physics.box2d.enable(arm_upperfront);
-		arm_upperfront.body.static = true;
-		// this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, 30, 10, 0, -80);
-
+		var arm_upperfront = this.game.add.sprite(250, 245, "arm_upperfront");
+		var arm_upperback = this.game.add.sprite(250, 245, "arm_upperback");
+		var arm_lowerfront = this.game.add.sprite(250, 245, "arm_lowerfront");
+		var arm_lowerback = this.game.add.sprite(250, 245, "arm_lowerback");
+		var leg_upperfront = this.game.add.sprite(250, 245, "leg_upperfront");
+		var leg_upperback = this.game.add.sprite(250, 245, "leg_upperback");
+		var leg_lowerfront = this.game.add.sprite(250, 245, "leg_lowerfront");
+		var leg_lowerback = this.game.add.sprite(250, 245, "leg_lowerback");
+		var head = this.game.add.sprite(250, 200, "head");
+		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront]);
+		this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, 30, -115, -5, -60, 5, 10, true, -180, 180, true);
+		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 5, 10, true, -180, 180, true);
+		this.game.physics.box2d.revoluteJoint(torso, head, 0, -130, 0, -50, 5, 10, true, -180, 180, true);
+		this.game.physics.box2d.revoluteJoint(torso, arm_upperback, -35, -115, -5, -60, 5, 10, true);
+		this.game.physics.box2d.revoluteJoint(arm_upperback, arm_lowerback, 0, 60, 5, -65, 5, 10, true, -180, 180, true);
+		this.game.physics.box2d.revoluteJoint(torso, leg_upperback, -35, 100, -5, -60, 5, 10, true);
+		this.game.physics.box2d.revoluteJoint(leg_upperback, leg_lowerback, 0, 60, 5, -65, 5, 10, true, -180, 180, true);
+		this.game.physics.box2d.revoluteJoint(torso, leg_upperfront, 35, 100, -5, -60, 5, 10, true);
+		this.game.physics.box2d.revoluteJoint(leg_upperfront, leg_lowerfront, 0, 60, 5, -65, 5, 10, true, -180, 180, true);
+		
 		// Set up handlers for mouse events
 	    this.game.input.onDown.add(this.mouseDragStart, this);
 	    this.game.input.addMoveCallback(this.mouseDragMove, this);
@@ -47,6 +59,8 @@ Mountaineer.Game.prototype = {
 		
 	}, 
 	render: function(){
+    	this.game.debug.box2dWorld();
+    	this.game.physics.box2d.debugDraw.joints = true;
 	
 	}, 
 	shutdown: function(){
