@@ -71,6 +71,10 @@ Mountaineer.Game.prototype = {
 		pickaxe_front = this.game.add.sprite(250, 200, "pickaxe");
 		pickaxe_back = this.game.add.sprite(250, 200, "pickaxe");
 		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront, pickaxe_back, pickaxe_front]);
+		pickaxe_back.body.angle = 90;
+		pickaxe_front.body.angle = 90;
+		console.log(pickaxe_front);
+
 		this.game.physics.box2d.revoluteJoint(torso, head, -30, -120, 0, 70, 0, 0, false, -30, 30, true);
 		this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, -40, -100, -5, -60, 0, 5, true, -60, 180, true);
 		this.game.physics.box2d.revoluteJoint(torso, arm_upperback, -20, -100, -5, -60, 5, 10, true, -60, 180, true);
@@ -78,8 +82,8 @@ Mountaineer.Game.prototype = {
 		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, true);
 		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, true);
 		
-		this.game.physics.box2d.weldJoint(arm_lowerfront, pickaxe_front, 0, 70, -50, 0,);
-		this.game.physics.box2d.weldJoint(arm_lowerback, pickaxe_back, 0, 70, -50, 0);
+		this.game.physics.box2d.weldJoint(arm_lowerfront, pickaxe_front, 0, 70, 50, 0);
+		this.game.physics.box2d.weldJoint(arm_lowerback, pickaxe_back, 0, 70, 50, 0);
 		
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperback, -30, 110, -5, -60, 0, 2, true, -45, 120, true);
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperfront, -60, 110, -5, -60, 0, 2, true, -45, 120, true);
