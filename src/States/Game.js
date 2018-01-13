@@ -2,6 +2,7 @@
 Mountaineer.Game = function (game) {
 	this.util = new Util(game);
 	this.dragging = false;
+	this.player = {};
 };
 
 Mountaineer.Game.prototype = {
@@ -59,9 +60,21 @@ Mountaineer.Game.prototype = {
 		leg_lowerfront = this.game.add.sprite(250, 245, "leg_lowerfront");
 		leg_lowerback = this.game.add.sprite(250, 245, "leg_lowerback");
 		head = this.game.add.sprite(250, 200, "head");
+
+		this.player.active_arm = arm_lowerfront;
+		this.player.inactive_arm = arm_lowerback;
+		this.player.active_arm.x = 250;
+		this.player.active_arm.y = 245;
+		this.player.inactive_arm.x = 250;
+		this.player.inactive_arm.y = 245;
+
 		pickaxe_front = this.game.add.sprite(250, 200, "pickaxe");
 		pickaxe_back = this.game.add.sprite(250, 200, "pickaxe");
 		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront, pickaxe_back, pickaxe_front]);
+		pickaxe_back.body.angle = 90;
+		pickaxe_front.body.angle = 90;
+		console.log(pickaxe_front);
+
 		this.game.physics.box2d.revoluteJoint(torso, head, -30, -120, 0, 70, 0, 0, false, -30, 30, true);
 		this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, -40, -100, -5, -60, 0, 5, true, -60, 180, true);
 		this.game.physics.box2d.revoluteJoint(torso, arm_upperback, -20, -100, -5, -60, 5, 10, true, -60, 180, true);
@@ -69,8 +82,8 @@ Mountaineer.Game.prototype = {
 		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, true);
 		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, true);
 		
-		this.game.physics.box2d.weldJoint(arm_lowerfront, pickaxe_front, 0, 70, -50, 0,);
-		this.game.physics.box2d.weldJoint(arm_lowerback, pickaxe_back, 0, 70, -50, 0);
+		this.game.physics.box2d.weldJoint(arm_lowerfront, pickaxe_front, 0, 70, 50, 0);
+		this.game.physics.box2d.weldJoint(arm_lowerback, pickaxe_back, 0, 70, 50, 0);
 		
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperback, -30, 110, -5, -60, 0, 2, true, -45, 120, true);
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperfront, -60, 110, -5, -60, 0, 2, true, -45, 120, true);
@@ -93,7 +106,8 @@ Mountaineer.Game.prototype = {
 		arm_lowerfront.body.setCollisionCategory(this.PLAYER_CAT);
 		arm_lowerback.body.setCollisionCategory(this.PLAYER_CAT);
 		leg_upperfront.body.setCollisionCategory(this.PLAYER_CAT);
-		leg_upperback.body.setCollisionCategory(this.PLAYER_CAT);				leg_lowerfront.body.setCollisionCategory(this.PLAYER_CAT);
+		leg_upperback.body.setCollisionCategory(this.PLAYER_CAT);		
+		leg_lowerfront.body.setCollisionCategory(this.PLAYER_CAT);
 		leg_lowerback.body.setCollisionCategory(this.PLAYER_CAT);
 		head.body.setCollisionCategory(this.PLAYER_CAT);
 		pickaxe_front.body.setCollisionCategory(this.PLAYER_CAT);
@@ -115,13 +129,31 @@ Mountaineer.Game.prototype = {
 		ground.body.setCollisionMask(this.ENV_MASK);
 
 		// Set up handlers for mouse events
-	    this.game.input.onDown.add(this.mouseDragStart, this);
-	    this.game.input.addMoveCallback(this.mouseDragMove, this);
-	    this.game.input.onUp.add(this.mouseDragEnd, this);
+	    this.game.input.onDown.add(this.switchArms, this);
+	    //this.game.input.addMoveCallback(this.movePlayerArm, this);
+	    //this.game.input.onUp.add(this.mouseDragEnd, this);
 
 	},
 	update: function(){
-		
+		var mouse_x;
+		var mouse_y;
+		var axe_x;
+		var axe_y;
+		var axe_to_mouse_dst_x;
+		var axe_to_mouse_dst_y;
+
+		mouse_x = this.util.pointerPos().x;
+		mouse_y = this.util.pointerPos().y;
+
+		axe_x = this.player.active_arm.x;
+		axe_y = this.player.active_arm.y;
+
+		axe_to_mouse_dst_x = mouse_x - axe_x;
+		axe_to_mouse_dst_y = mouse_y - axe_y;
+
+		this.player.active_arm.body.velocity.x = axe_to_mouse_dst_x;
+		this.player.active_arm.body.velocity.y = axe_to_mouse_dst_y;
+
 		
 	}, 
 	render: function(){
@@ -130,6 +162,18 @@ Mountaineer.Game.prototype = {
 	
 	}, 
 	shutdown: function(){
+	},
+	switchArms: function() {
+		this.player.active_arm.body.velocity.x = 0;
+		this.player.active_arm.body.velocity.y = 0;
+
+		var temp = this.player.active_arm;
+
+		this.player.active_arm = this.player.inactive_arm;
+		this.player.inactive_arm = temp;
+
+
+
 	},
 	mouseDragStart: function() {
 	    this.game.physics.box2d.mouseDragStart(this.game.input.mousePointer);  
