@@ -69,12 +69,15 @@ Mountaineer.MountainTest.prototype = {
 
 		//this.world.scale.setTo(0.5,0.5);
 		let scope = this;
+
 		this.input.mouse.mouseWheelCallback = function (event) {   
 			let delta = scope.input.mouse.wheelDelta;
-			let s  = scope.camera.scale.x;
-			if(s + 0.1 * delta < 0.5) return;
-			if(s + 0.1 * delta > 2) return;
-			scope.camera.scale.setTo(s + 0.1 * delta,s + 0.1 * delta)
+			let s = scope.world.scale.x;
+
+			s += delta * 0.1;
+			s = Phaser.Math.clamp(s,0.25,2);
+
+			scope.world.scale.setTo(s,s)
 		};
 
 		// Button
@@ -87,22 +90,26 @@ Mountaineer.MountainTest.prototype = {
 		if(!this.dragging && this.util.pointerDown()){
 			this.dragging = true;
 			this.dragPosition = this.util.pointerPos();
-			this.dragPosition.x += this.camera.x;
-			this.dragPosition.y += this.camera.y;
+			let scale = this.world.scale.x;
+			this.dragPosition.x += this.world.pivot.x * scale;
+			this.dragPosition.y += this.world.pivot.y * scale;
 		}
 		if(this.dragging){
 			if(!this.util.pointerDown()) this.dragging = false;
 			let p = this.util.pointerPos();
-			this.camera.x = this.dragPosition.x - (p.x);
-			this.camera.y = this.dragPosition.y - (p.y);
+			let scale = this.world.scale.x;
+			this.world.pivot.x = (this.dragPosition.x - p.x) / scale;
+			this.world.pivot.y = (this.dragPosition.y - p.y) / scale;
 			
 		}
+
+	
 	},
 	shutdown: function () {
 		this.camera.x = 0;
 		this.camera.y = 0;
 		this.camera.scale.setTo(1,1);
-		console.log("Destroy!");
+
 	},
 	viewMenu: function() {
 		this.state.start('MainMenu');
