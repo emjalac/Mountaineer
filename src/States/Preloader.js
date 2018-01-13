@@ -34,6 +34,20 @@ Mountaineer.Preloader.prototype = {
 		this.loadingBar = this.add.sprite(295,403,"loading-bar");
 		this.loadingBarWidth = this.loadingBar.width;
 
+		// Climber's body
+		this.load.image("torso", "assets/images/character/Torso.png");
+		this.load.image("arm_upperfront", "assets/images/character/Arm_UpperFront.png");
+		this.load.image("arm_lowerfront", "assets/images/character/Arm_LowerFront.png");
+		this.load.image("arm_upperback", "assets/images/character/Arm_UpperBack.png");
+		this.load.image("arm_lowerback", "assets/images/character/Arm_LowerBack.png");
+		this.load.image("leg_lowerback", "assets/images/character/Leg_LowerBack.png");
+		this.load.image("leg_lowerfront", "assets/images/character/Leg_LowerFront.png");
+		this.load.image("leg_upperback", "assets/images/character/Leg_UpperBack.png");
+		this.load.image("leg_upperfront", "assets/images/character/Leg_UpperFront.png");
+		this.load.image("head", "assets/images/character/Head.png")
+
+		// The ground
+
 	},
 	create: function () {
 		this.state.start("MainMenu");
