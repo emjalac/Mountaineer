@@ -33,6 +33,7 @@ Mountaineer.Game.prototype = {
     	var leg_lowerfront;
     	var leg_lowerback;
 		var head;
+		var pickaxe;
 	
 		//Environment
 		environment = this.game.add.group();
@@ -58,16 +59,22 @@ Mountaineer.Game.prototype = {
 		leg_lowerfront = this.game.add.sprite(250, 245, "leg_lowerfront");
 		leg_lowerback = this.game.add.sprite(250, 245, "leg_lowerback");
 		head = this.game.add.sprite(250, 200, "head");
-		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront]);
+		pickaxe_front = this.game.add.sprite(250, 200, "pickaxe");
+		pickaxe_back = this.game.add.sprite(250, 200, "pickaxe");
+		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront, pickaxe_back, pickaxe_front]);
 		this.game.physics.box2d.revoluteJoint(torso, head, -30, -120, 0, 70, 0, 0, false, -30, 30, true);
-		this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, -20, -100, -5, -60, 0, 5, true, -180, 180, true);
-		this.game.physics.box2d.revoluteJoint(torso, arm_upperback, -20, -100, -5, -60, 5, 10, true);
+		this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, -40, -100, -5, -60, 0, 5, true, -60, 180, true);
+		this.game.physics.box2d.revoluteJoint(torso, arm_upperback, -20, -100, -5, -60, 5, 10, true, -60, 180, true);
 		this.game.physics.box2d.revoluteJoint(arm_upperback, arm_lowerback, 0, 60, 5, -70, 0, 5, true, -20, 160, true);
-		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 5, 10, true, -20, 160, true);
-		this.game.physics.box2d.revoluteJoint(torso, leg_upperback, -35, 100, -5, -60, 5, 10, true);
-		this.game.physics.box2d.revoluteJoint(leg_upperback, leg_lowerback, 0, 60, 5, -65, 5, 10, true, -180, 180, true);
-		this.game.physics.box2d.revoluteJoint(torso, leg_upperfront, 35, 100, -5, -60, 5, 10, true);
-		this.game.physics.box2d.revoluteJoint(leg_upperfront, leg_lowerfront, 0, 60, 5, -65, 5, 10, true, -180, 180, true);
+		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, true);
+		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, true);
+		this.game.physics.box2d.revoluteJoint(arm_lowerfront, pickaxe_front, 0, 70, -50, 0, 0, 0, false, -30, 20, true);
+		this.game.physics.box2d.revoluteJoint(arm_lowerback, pickaxe_back, 0, 70, -50, 0, 0, 0, false, -30, 20, true);
+		this.game.physics.box2d.revoluteJoint(torso, leg_upperback, -30, 110, -5, -60, 0, 2, true, -45, 120, true);
+		this.game.physics.box2d.revoluteJoint(torso, leg_upperfront, -60, 110, -5, -60, 0, 2, true, -45, 120, true);
+		this.game.physics.box2d.revoluteJoint(leg_upperfront, leg_lowerfront, 0, 80, 5, -75, 5, 10, true, -140, 10, true);
+		this.game.physics.box2d.revoluteJoint(leg_upperback, leg_lowerback, 0, 80, 5, -75, 5, 10, true, -140, 10, true);
+
 		
 		// Set up collision masks
 		// Player collides with: env (cat, mask) -> (01, 10) -> (1, 2)
@@ -87,6 +94,8 @@ Mountaineer.Game.prototype = {
 		leg_upperback.body.setCollisionCategory(this.PLAYER_CAT);				leg_lowerfront.body.setCollisionCategory(this.PLAYER_CAT);
 		leg_lowerback.body.setCollisionCategory(this.PLAYER_CAT);
 		head.body.setCollisionCategory(this.PLAYER_CAT);
+		pickaxe_front.body.setCollisionCategory(this.PLAYER_CAT);
+		pickaxe_back.body.setCollisionCategory(this.PLAYER_CAT);
 		ground.body.setCollisionCategory(this.ENV_CAT);
 
 		torso.body.setCollisionMask(this.PLAYER_MASK);
@@ -99,6 +108,8 @@ Mountaineer.Game.prototype = {
 		leg_lowerfront.body.setCollisionMask(this.PLAYER_MASK);
 		leg_lowerback.body.setCollisionMask(this.PLAYER_MASK);
 		head.body.setCollisionMask(this.PLAYER_MASK);
+		pickaxe_front.body.setCollisionMask(this.PLAYER_MASK);
+		pickaxe_back.body.setCollisionMask(this.PLAYER_MASK);
 		ground.body.setCollisionMask(this.ENV_MASK);
 
 		// Set up handlers for mouse events

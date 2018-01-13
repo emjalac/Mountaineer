@@ -21,7 +21,8 @@ Mountaineer.Preloader.prototype = {
 			"leg_lowerfront",
 			"leg_upperback",
 			"leg_lowerback",
-			"head"
+			"head",
+			"pickaxe"
 		];
 		
 		var i;
