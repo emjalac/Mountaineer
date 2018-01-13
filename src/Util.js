@@ -3,6 +3,16 @@ var Util = function(game){
 	this.game = game;
 };
 
+Util.prototype.radToDeg = function(rad){
+    return Math.round(rad * (180/Math.PI));
+}
+
+Util.prototype.aDiff = function(a,b){
+    let diff = a - b; 
+    diff = (diff + Math.PI) % (Math.PI * 2) - Math.PI;
+    return diff;
+}
+
 Util.prototype.pointerDown = function(){
     var mousePointer = this.game.input.mousePointer;
     var pointer1 = this.game.input.pointer1;
