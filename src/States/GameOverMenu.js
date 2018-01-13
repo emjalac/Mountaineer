@@ -9,16 +9,17 @@ Mountaineer.GameOverMenu = function (game) {
 Mountaineer.GameOverMenu.prototype = {
 	create: function () {
 		this.ready = false;
-		this.replayButton = this.add.button(this.world.centerX, this.world.centerY + 20, 'play-again-btn', function(){
+		this.replayButton = this.add.button(this.stage.width/2, this.stage.height/2 + 20, 'play-again-btn', function(){
 			this.state.start("Game");
 		}, this, 0, 1, 0);
 		this.replayButton.anchor.setTo(0.5,0.5);
+
 	},
 	update: function () {
 
 	},
 	destroy: function () {
-		this.playText.destroy();
+		this.replayButton.destroy();
 	}
 };
 

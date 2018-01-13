@@ -1,15 +1,13 @@
 
 Mountaineer.Game = function (game) {
 	this.util = new Util(game);
-	
+	this.dragging = false;
 };
 
 Mountaineer.Game.prototype = {
 	create: function () {
-		var style = {font:"20px;",fill:"grey",align:"center"};
-		this.creditText = this.add.text(0,400,"Game!",style);
-		this.creditText.font = "cocogoose";
-		this.creditText.x = this.world.centerX - this.creditText.width/2;
+
+		
 
 		// Button
 		var backButton = this.add.button(100, 100, 'back-btn', this.viewMenu, this, 0, 1, 0);
@@ -97,7 +95,8 @@ Mountaineer.Game.prototype = {
 		arm_lowerfront.body.setCollisionMask(this.PLAYER_MASK);
 		arm_lowerback.body.setCollisionMask(this.PLAYER_MASK);
 		leg_upperfront.body.setCollisionMask(this.PLAYER_MASK);
-		leg_upperback.body.setCollisionMask(this.PLAYER_MASK);					leg_lowerfront.body.setCollisionMask(this.PLAYER_MASK);
+		leg_upperback.body.setCollisionMask(this.PLAYER_MASK);					
+		leg_lowerfront.body.setCollisionMask(this.PLAYER_MASK);
 		leg_lowerback.body.setCollisionMask(this.PLAYER_MASK);
 		head.body.setCollisionMask(this.PLAYER_MASK);
 		ground.body.setCollisionMask(this.ENV_MASK);
@@ -106,6 +105,7 @@ Mountaineer.Game.prototype = {
 	    this.game.input.onDown.add(this.mouseDragStart, this);
 	    this.game.input.addMoveCallback(this.mouseDragMove, this);
 	    this.game.input.onUp.add(this.mouseDragEnd, this);
+
 	},
 	update: function(){
 		
@@ -128,7 +128,7 @@ Mountaineer.Game.prototype = {
 	    this.game.physics.box2d.mouseDragEnd();
 	},
 	viewMenu: function() {
-		this.state.start('GameOverMenu');
+		this.state.start('MainMenu');
 	}
 
 };

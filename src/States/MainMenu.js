@@ -13,19 +13,23 @@ Mountaineer.MainMenu.prototype = {
 		this.ready = false;
 
 
-		this.playButton = this.add.button(this.world.centerX, this.world.centerY + 20, 'play-btn', function(){
+		this.playButton = this.add.button(this.stage.width/2, this.stage.height/2 - 100, 'play-btn', function(){
 			this.state.start("Game");
 		}, this, 0, 1, 0);
 		this.playButton.anchor.setTo(0.5,0.5);
 
-		
+		this.playButton2 = this.add.button(this.stage.width/2, this.stage.height/2 + 100, 'play-btn', function(){
+			this.state.start("MountainTest");
+		}, this, 0, 1, 0);
+		this.playButton2.anchor.setTo(0.5,0.5);
 
 	},
 	update: function(){
 
 	}, 
-	destroy: function(){
-		this.playText.destroy();
+	shutdown: function(){
+		this.playButton.destroy();
+		this.playButton2.destroy();
 	}
 
 };
