@@ -22,7 +22,7 @@ Mountaineer.Game.prototype = {
     	this.game.physics.box2d.friction = 0.5;
     	this.game.physics.box2d.restitution = 0.5;
 
-	//Initialize vars
+		//Initialize vars
     	var environment;
     	var ground;
     	var torso;
@@ -35,12 +35,10 @@ Mountaineer.Game.prototype = {
     	var leg_lowerfront;
     	var leg_lowerback;
 		var head;
-
-    	// Add sprites
 	
-	//Environment
+		//Environment
 		environment = this.game.add.group();
-    	ground = environment.create(0, 500, "loading-bar");
+    	ground = environment.create(0, 1000, "loading-bar");
     	ground.width = 2000;
 		this.game.physics.box2d.enable(ground);
 		ground.body.static = true;
@@ -51,6 +49,7 @@ Mountaineer.Game.prototype = {
 		torso.enableBody = true;
 		this.game.physics.box2d.enable(torso);
 		torso.body.restitution = 0.3;
+		torso.body.static = true;
 
 		arm_upperfront = this.game.add.sprite(250, 245, "arm_upperfront");
 		arm_upperback = this.game.add.sprite(250, 245, "arm_upperback");
@@ -62,11 +61,11 @@ Mountaineer.Game.prototype = {
 		leg_lowerback = this.game.add.sprite(250, 245, "leg_lowerback");
 		head = this.game.add.sprite(250, 200, "head");
 		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront]);
-		this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, 50, -115, -5, -60, 5, 10, true, -180, 180, true);
-		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 5, 10, true, -180, 180, true);
-		this.game.physics.box2d.revoluteJoint(torso, head, -30, -120, 0, 70, 5, 10, true, -45, 45, true);
-		this.game.physics.box2d.revoluteJoint(torso, arm_upperback, -50, -115, -5, -60, 5, 10, true);
-		this.game.physics.box2d.revoluteJoint(arm_upperback, arm_lowerback, 0, 60, 5, -65, 0, 0, false, -180, 180, true);
+		this.game.physics.box2d.revoluteJoint(torso, head, -30, -120, 0, 70, 0, 0, false, -30, 30, true);
+		this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, -20, -100, -5, -60, 0, 5, true, -180, 180, true);
+		this.game.physics.box2d.revoluteJoint(torso, arm_upperback, -20, -100, -5, -60, 5, 10, true);
+		this.game.physics.box2d.revoluteJoint(arm_upperback, arm_lowerback, 0, 60, 5, -70, 0, 5, true, -20, 160, true);
+		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 5, 10, true, -20, 160, true);
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperback, -35, 100, -5, -60, 5, 10, true);
 		this.game.physics.box2d.revoluteJoint(leg_upperback, leg_lowerback, 0, 60, 5, -65, 5, 10, true, -180, 180, true);
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperfront, 35, 100, -5, -60, 5, 10, true);
