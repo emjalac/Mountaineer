@@ -29,7 +29,7 @@ Mountaineer.Preloader.prototype = {
 			this.load.image(images[i],"assets/images/"+images[i]+".png");
 		}
 		for(i=0;i<character_images.length;i++) {
-			this.load.image(character_images[i],"assets/images/character/"+this.capitalize(character_images[i])+".png");
+			this.load.image(character_images[i],"assets/images/character/"+character_images[i]+".png");
 		}
 			
 		var spritesheets = [
