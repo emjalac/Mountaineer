@@ -1,0 +1,28 @@
+{"frames": [
+
+{
+	"filename": "title-how-to-pressed.png",
+	"frame": {"x":0,"y":0,"w":346,"h":112},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":346,"h":112},
+	"sourceSize": {"w":346,"h":112}
+},
+{
+	"filename": "title-how-to.png",
+	"frame": {"x":346,"y":0,"w":347,"h":112},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":347,"h":112},
+	"sourceSize": {"w":347,"h":112}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "how-btn.png",
+	"format": "RGBA8888",
+	"size": {"w":693,"h":112},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:9f94ffe559ea9b495e4ede1d714a6004:1825b3335483d5bace4bb46298f75bf6:2d2f359e645b82d860f606c40c5349ff$"
+}
+}

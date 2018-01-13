@@ -1,0 +1,28 @@
+{"frames": [
+
+{
+	"filename": "how-to-play-back-clicked.png",
+	"frame": {"x":0,"y":0,"w":215,"h":95},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":215,"h":95},
+	"sourceSize": {"w":215,"h":95}
+},
+{
+	"filename": "how-to-play-back.png",
+	"frame": {"x":215,"y":0,"w":216,"h":95},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":95},
+	"sourceSize": {"w":216,"h":95}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "back-btn.png",
+	"format": "RGBA8888",
+	"size": {"w":431,"h":95},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:54ec9f8b7deec22fa81e6173b6e47974:e28d5feb279e9ef7bcabb643a898d470:91836cdfb14dbb6cd3bf5e3334ddeda4$"
+}
+}

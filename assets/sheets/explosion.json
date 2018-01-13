@@ -1,0 +1,60 @@
+{"frames": [
+
+{
+	"filename": "explosion-01.png",
+	"frame": {"x":0,"y":0,"w":37,"h":36},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":37,"h":36},
+	"sourceSize": {"w":37,"h":36}
+},
+{
+	"filename": "explosion-02.png",
+	"frame": {"x":37,"y":0,"w":71,"h":70},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":71,"h":70},
+	"sourceSize": {"w":71,"h":70}
+},
+{
+	"filename": "explosion-03.png",
+	"frame": {"x":108,"y":0,"w":77,"h":72},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":77,"h":72},
+	"sourceSize": {"w":77,"h":72}
+},
+{
+	"filename": "explosion-04.png",
+	"frame": {"x":185,"y":0,"w":86,"h":71},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":71},
+	"sourceSize": {"w":86,"h":71}
+},
+{
+	"filename": "explosion-05.png",
+	"frame": {"x":271,"y":0,"w":69,"h":66},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":66},
+	"sourceSize": {"w":69,"h":66}
+},
+{
+	"filename": "explosion-06.png",
+	"frame": {"x":340,"y":0,"w":67,"h":61},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":61},
+	"sourceSize": {"w":67,"h":61}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "explosion.png",
+	"format": "RGBA8888",
+	"size": {"w":407,"h":72},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:bbb9567fd9ed6894ada15d86c7e426b4:a8300f8f248fabdac7eefb65e458f585:900e1fb3093a9a6ecb2b2b49071c44f7$"
+}
+}
