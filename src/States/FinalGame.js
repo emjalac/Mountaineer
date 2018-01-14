@@ -162,11 +162,13 @@ Mountaineer.FinalGame.prototype = {
 		//this.world.scale.setTo(0.5,0.5);
 
 		// Add background
-		// this.background_color = this.add.sprite(this.init_offset_x, this.init_offset_y,'backgroundcolor');
 		this.background1 = this.add.sprite(this.init_offset_x+150, this.init_offset_y-4900,'background');
 		this.background2 = this.add.sprite(this.init_offset_x-300, this.init_offset_y-4400,'background');
 		this.background3 = this.add.sprite(this.init_offset_x-1500, this.init_offset_y-5700,'background');
+		this.background4 = this.add.sprite(this.init_offset_x+300, this.init_offset_y-2300,'background');
 		this.background_mountain = this.add.sprite(this.init_offset_x-1300, this.init_offset_y-3350,'backgroundmountain');
+
+		// Add flag
 
 		// Enable physics system
 	    this.game.physics.startSystem(Phaser.Physics.BOX2D);
@@ -347,6 +349,10 @@ Mountaineer.FinalGame.prototype = {
 			if(factor < 0) factor = 0;
 			this.background_music.volume = Math.pow(factor,2);
 			this.snowFilter.update();
+			// Check if game is over
+			if(this.snowFilter.uniforms.health.value >= 1.0){
+				this.shutdown();
+			}
 		}
 
 		this.MountainUpdate = function(){
@@ -573,8 +579,13 @@ Mountaineer.FinalGame.prototype = {
 		// this.game.debug.box2dWorld();
   //   	this.game.physics.box2d.debugDraw.joints = true;
 	},
-	destroy: function () {
-
+	shutdown: function () {
+		this.world.pivot.x = 0;
+		this.world.pivot.y = 0;
+		this.world.scale.setTo(1,1);
+		this.snowFilter.destroy();
+		this.stage.filters = null;
+		this.state.start('GameOverMenu');
 	}
 };
 

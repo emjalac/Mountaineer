@@ -32,6 +32,9 @@ Mountaineer.Preloader.prototype = {
 		this.load.image("backgroundmountain","assets/images/backgroundmountain.png");
 		this.load.images("backgroundcolor", "assets/images/backgroundcolor.png");
 
+		//flag;
+		this.load.images("flag", "assets/images/flag.png");
+
 		var i;
 		// for(i=0;i<images.length;i++) {
 		// 	this.load.image(images[i],"assets/images/"+images[i]+".png");
