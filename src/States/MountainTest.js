@@ -215,7 +215,8 @@ Mountaineer.MountainTest.prototype = {
 		this.camera.x = 0;
 		this.camera.y = 0;
 		this.camera.scale.setTo(1,1);
-
+		this.snowFilter.destroy();
+		this.stage.filters = null;
 	},
 
 	chipMountain: function(x,y){

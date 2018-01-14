@@ -14,7 +14,8 @@ Mountaineer.MainMenu.prototype = {
 
 
 		this.playButton = this.add.button(this.stage.width/2, this.stage.height/2 - 100, 'play-btn', function(){
-			this.state.start("Game");
+			this.state.start("FinalGame");
+			//this.state.start("Game");
 		}, this, 0, 1, 0);
 		this.playButton.anchor.setTo(0.5,0.5);
 

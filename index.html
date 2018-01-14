@@ -13,6 +13,7 @@
 	<script src="src/States/Game.js"></script>
 	<script src="src/States/GameOverMenu.js"></script>
 	<script src="src/States/MountainTest.js"></script>
+	<script src="src/States/FinalGame.js"></script>
 
 	<!-- Include my own classes -->
 	<script src="src/Util.js"></script>
@@ -47,6 +48,7 @@ window.onload = function() {
 	game.state.add('Game', Mountaineer.Game);
 	game.state.add('GameOverMenu', Mountaineer.GameOverMenu);
 	game.state.add('MountainTest', Mountaineer.MountainTest);
+	game.state.add('FinalGame', Mountaineer.FinalGame);
 
 	//	Now start the Boot state.
 	game.state.start('Boot');
