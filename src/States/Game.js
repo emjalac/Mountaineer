@@ -26,6 +26,9 @@ Mountaineer.Game.prototype = {
 
     	this.world.pivot.x = -500;
 
+    	// Glow filter
+    	this.glowFilter = new Phaser.Filter.Glow(game);
+
 		//Initialize vars
     	var environment;
     	var ground;
@@ -42,7 +45,7 @@ Mountaineer.Game.prototype = {
 		var pickaxe_back;
 		var pickaxe_front;
 	
-		//Environment
+		// Environment
 		environment = this.game.add.group();
     	ground = environment.create(0, 1000, "loading-bar");
     	ground.width = 2000;
@@ -76,8 +79,6 @@ Mountaineer.Game.prototype = {
 		pickaxe_back = this.game.add.sprite(250, 200, "pickaxe");
 		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront]);
 		this.game.physics.box2d.enable([pickaxe_back, pickaxe_front]);
-		pickaxe_back.body.angle = 90;
-		pickaxe_front.body.angle = 90;
 		pickaxe_back.body.clearFixtures();
 		pickaxe_front.body.clearFixtures();
 		pickaxe_back.body.setPolygon([27-130,4-110 , 61-130,3-110 , 51-130,77-110 , 71-130,87-110 , 73-130,107-110 , 56-130,119-110 , 67-130,217-110 , 28-130,117-110 , 3-130,99-110 , 31-130,80-110]);
@@ -99,15 +100,16 @@ Mountaineer.Game.prototype = {
 		var limits = true;
 
 		this.game.physics.box2d.revoluteJoint(torso, head, -30, -120, 0, 70, 0, 0, false, -30, 30, limits);
-		this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, -40, -100, -5, -60, 0, 5, true, -60, 180, limits);
-		this.game.physics.box2d.revoluteJoint(torso, arm_upperback, -20, -100, -5, -60, 5, 10, true, -60, 180, limits);
-		this.game.physics.box2d.revoluteJoint(arm_upperback, arm_lowerback, 0, 60, 5, -70, 0, 5, true, -20, 160, limits);
-		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, limits);
-		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, limits);
+		this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, -40, -100, -5, -60, 0, 2, true, -60, 180, limits);
+		this.game.physics.box2d.revoluteJoint(torso, arm_upperback, -20, -100, -5, -60, 0, 2, true, -60, 180, limits);
+		this.game.physics.box2d.revoluteJoint(arm_upperback, arm_lowerback, 0, 60, 0, -70, 0, 2, true, -5, 160, limits);
+		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, 5, -70, 0, 2, true, -5, 160, limits);
 		
 		this.game.physics.box2d.weldJoint(arm_lowerfront, pickaxe_front, 0, 70, 50, 0);
 		this.game.physics.box2d.weldJoint(arm_lowerback, pickaxe_back, 0, 70, 50, 0);
-		
+		pickaxe_back.body.angle = 30;
+		pickaxe_front.body.angle = 90;
+
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperback, -30, 110, -5, -60, 0, 2, true, -45, 120, limits);
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperfront, -60, 110, -5, -60, 0, 2, true, -45, 120, limits);
 		this.game.physics.box2d.revoluteJoint(leg_upperfront, leg_lowerfront, 0, 80, 5, -75, 5, 10, true, -140, 10, limits);
@@ -186,7 +188,6 @@ Mountaineer.Game.prototype = {
 
 		this.player.active_axe.body.velocity.x = 10*axe_to_mouse_dst_x;
 		this.player.active_axe.body.velocity.y = 10*axe_to_mouse_dst_y;
-
 		// if (Math.abs(this.player.active_axe.body.velocity.x) > this.player.torso_move_speed_min){
 		// 	this.player.torso.body.velocity.x = axe_to_mouse_dst_x;
 		// }
@@ -194,8 +195,6 @@ Mountaineer.Game.prototype = {
 		// if (Math.abs(this.player.active_axe.body.velocity.y) > this.player.torso_move_speed_min){
 		// 	this.player.torso.body.velocity.y = axe_to_mouse_dst_y;
 		// }
-
-		
 	}, 
 	render: function(){
     	//this.game.debug.box2dWorld();
@@ -222,11 +221,6 @@ Mountaineer.Game.prototype = {
 		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain.joint);
 	},
 	checkCollision: function(){
-
-
-
-
-
 	},
 	mouseDragStart: function() {
 	    this.game.physics.box2d.mouseDragStart(this.game.input.mousePointer);  
@@ -242,3 +236,4 @@ Mountaineer.Game.prototype = {
 	}
 
 };
+

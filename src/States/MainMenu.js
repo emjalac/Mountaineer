@@ -8,7 +8,6 @@ Mountaineer.MainMenu.prototype = {
 	create: function () {
 		this.ready = false;
 
-
 		this.titleScreen = this.add.sprite(0,0,"title_screen");
 		this.titleScreen.scale.setTo(1280/1920);
 
