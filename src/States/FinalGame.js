@@ -135,7 +135,7 @@ Mountaineer.FinalGame = function (game) {
     			return true;
     		return false;
     	}
-    	this.mountain.markPointBlack = function(x,y){
+    	this.mountain.markPointBlack = function(x,y,depth){
     		let hash = String(x) + "x" + String(y);
     		this.blacklist[hash] = true;
     	}
@@ -363,27 +363,52 @@ Mountaineer.FinalGame.prototype = {
 		let temp = this.player.active_axe;
 		this.player.active_axe = this.player.inactive_axe;
 		this.player.inactive_axe = temp;		
-		//this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
+
+		// Destroy old joint if it exists
+		if(this.player.axe_joint){
+			this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
+		}
+
+		// New joint only created if player is close enough 
+		let vertIndex = this.getNearestVertex(this.player.active_axe);
+
+		if(vertIndex != -1){
+			// It returns -1 if no close vertex found 
+			let offX = this.mountain.body.x - this.mountain.vertices[vertIndex];
+			let offY = this.mountain.body.y - this.mountain.vertices[vertIndex+1];
+			this.player.inactive_axe.body.static = true;
+			//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, offX,offY);
+		}
+
 		//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.init_offset_x, this.init_offset_y);
 
-		//this.collideWithNearestVertex();
 
 	},
-	collideWithNearestVertex: function() {
-		let d = 100000000000;
+	getNearestVertex: function(axe) {
+		console.log(axe.x,axe.y)
+		let min_dist = null;
 		let index = null;
 		for(let i=0;i<this.mountain.vertices.length;i+=2){
 			let x = this.mountain.vertices[i];
 			let y = this.mountain.vertices[i+1];
-			let temp_d = this.game.math.distanceSq(x, y, this.player.active_axe.x, this.player.active_axe.y); //distance to active axe squared
-			console.log(temp_d);
-			if (temp_d < d){
-				d = temp_d;
+			let dx = x - axe.x; 
+			let dy = y - axe.y; 
+
+			let dist = Math.sqrt(dx * dx + dy * dy)
+			if(min_dist == null)
+				min_dist = dist;
+
+			if (min_dist > dist){
+				min_dist = dist;
 				index = i;
 			}
 		}
-		console.log("Nearest vertex is"+index);
-		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.mountain.vertices[index], this.mountain.vertices[index+1]);
+
+		if(min_dist > 200)
+			return -1;
+
+		return index;
+
 
 	},
 	checkCollision: function(body1,body2,fixture1,fixture2,begin){
@@ -486,7 +511,7 @@ Mountaineer.FinalGame.prototype = {
 
 	   newP.x += Math.cos(pushAngle) * -depth;
 	   newP.y += Math.sin(pushAngle) * -depth;
-	   this.mountain.markPointBlack(newP.x,newP.y);
+	   this.mountain.markPointBlack(newP.x,newP.y,depth);
 
 	   // Add two more 
 	   let newP1 = {x:0,y:0};
@@ -494,14 +519,14 @@ Mountaineer.FinalGame.prototype = {
 	   newP1.y = nextP.y + (p.y-nextP.y) * (finalFactor + 0.1 * dir);
 	   newP1.x = Math.round(newP1.x);
 	   newP1.y = Math.round(newP1.y);
-	   this.mountain.markPointBlack(newP1.x,newP1.y);
+	   this.mountain.markPointBlack(newP1.x,newP1.y,depth);
 
 	   let newP2 = {x:0,y:0};
 	   newP2.x = nextP.x + (p.x-nextP.x) * (finalFactor - 0.1 * dir);
 	   newP2.y = nextP.y + (p.y-nextP.y) * (finalFactor - 0.1 * dir);
 	   newP2.x = Math.round(newP2.x);
 	   newP2.y = Math.round(newP2.y);
-	   this.mountain.markPointBlack(newP2.x,newP2.y);
+	   this.mountain.markPointBlack(newP2.x,newP2.y,depth);
 
 
 
