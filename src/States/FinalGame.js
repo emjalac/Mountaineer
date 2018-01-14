@@ -167,7 +167,7 @@ Mountaineer.FinalGame.prototype = {
 		this.background1 = this.add.sprite(this.init_offset_x+150, this.init_offset_y-4900,'background');
 		this.background2 = this.add.sprite(this.init_offset_x-300, this.init_offset_y-4400,'background');
 		this.background3 = this.add.sprite(this.init_offset_x-1500, this.init_offset_y-5700,'background');
-		this.background4 = this.add.sprite(this.init_offset_x+300, this.init_offset_y-2300,'background');
+		this.background4 = this.add.sprite(this.init_offset_x+300, this.init_offset_y-2300,'background_flat');
 		this.background_mountain = this.add.sprite(this.init_offset_x-1300, this.init_offset_y-3350,'backgroundmountain');
 
 		// Enable physics system
@@ -437,7 +437,6 @@ Mountaineer.FinalGame.prototype = {
 
 		this.CheckDestination = function(){
 			var dist = Math.abs(this.flag.x + this.flag.y - this.player.active_axe.x - this.player.active_axe.y);
-			console.log(dist);
 			if(dist < 50){
 				this.win();
 			}

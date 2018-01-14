@@ -30,7 +30,7 @@ Mountaineer.Preloader.prototype = {
 		this.load.image("title_screen","assets/images/title_screen.png");
 		this.load.image("background","assets/images/background.png");
 		this.load.image("backgroundmountain","assets/images/backgroundmountain.png");
-		this.load.image("backgroundcolor", "assets/images/backgroundcolor.png");
+		this.load.image("background_flat", "assets/images/background_new.png");
 
 		//flag;
 		this.load.image("flag", "assets/images/flag.png");
