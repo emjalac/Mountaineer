@@ -389,10 +389,8 @@ Mountaineer.FinalGame.prototype = {
 		this.CameraUpdate = function(){
 			let targetX = this.player.active_axe.x - 800;
 			let targetY = this.player.active_axe.y - 400;
-			// this.world.pivot.x += (targetX - this.world.pivot.x) * 0.16;
-			// this.world.pivot.y += (targetY - this.world.pivot.y) * 0.16;
-			this.world.pivot.x = this.flag.x-200;
-			this.world.pivot.y = this.flag.y-300;
+			this.world.pivot.x += (targetX - this.world.pivot.x) * 0.16;
+			this.world.pivot.y += (targetY - this.world.pivot.y) * 0.16;
 		}
 
 		this.HealthUpdate = function(){
