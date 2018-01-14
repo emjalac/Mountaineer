@@ -344,10 +344,20 @@ Mountaineer.FinalGame.prototype = {
 		}
 
 		this.CameraUpdate = function(){
-			let targetX = this.player.active_axe.x - 800;
-			let targetY = this.player.active_axe.y - 400;
+			
+			let targetX = this.player.head.x - 800;
+			let targetY = this.player.head.y - 400;
+
+			let offX = this.player.active_axe.x - targetX;
+			let offY = this.player.active_axe.y - targetY;
+			targetX += offX * 0.1;
+			targetY += offY * 0.1;
+
+
 			this.world.pivot.x += (targetX - this.world.pivot.x) * 0.16;
 			this.world.pivot.y += (targetY - this.world.pivot.y) * 0.16;
+
+
 		}
 
 		this.HealthUpdate = function(){
@@ -629,7 +639,7 @@ Mountaineer.FinalGame.prototype = {
 		if(this.player.torso.body.static == true){
 			this.init_counter ++;
 			if(this.init_counter > 60 * 2){
-				this.player.torso.body.static = false;
+				//this.player.torso.body.static = false;
 			}
 		}
 		
