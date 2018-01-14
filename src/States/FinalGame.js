@@ -76,8 +76,10 @@ Mountaineer.FinalGame = function (game) {
 
 Mountaineer.FinalGame.prototype = {
 	create: function () {
-		this.init_offset_x = 2100; //offsets from mountain origin (slightly up and left of top of mountain)
-		this.init_offset_y = 1500;
+		this.init_offset_x = 2500; //offsets from mountain origin (slightly up and left of top of mountain)
+		this.init_offset_y = 4400;
+		this.init_counter = 0;
+		//this.world.scale.setTo(0.5,0.5);
 
 		// Enable physics system
 	    this.game.physics.startSystem(Phaser.Physics.BOX2D);
@@ -87,21 +89,25 @@ Mountaineer.FinalGame.prototype = {
 
     	// Create the player
     	this.player = {};
-    	let torso = this.game.add.sprite(500 + this.init_offset_x, 300 + this.init_offset_y, "torso");
-    	torso.enableBody = true;
-    	this.game.physics.box2d.enable(torso);
-    	torso.body.restitution = 0.3;
-    	this.player.torso = torso;
-
-    	let arm_upperfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "arm_upperfront");
+    	
+    	    	
+    	/// These must be created in the order you want them to be rendererd
 		let arm_upperback = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "arm_upperback");
-		let arm_lowerfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "arm_lowerfront");
 		let arm_lowerback = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "arm_lowerback");
-		let leg_upperfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "leg_upperfront");
+		
 		let leg_upperback = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "leg_upperback");
-		let leg_lowerfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "leg_lowerfront");
 		let leg_lowerback = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "leg_lowerback");
+
 		let head = this.game.add.sprite(250 + this.init_offset_x, 200 + this.init_offset_y, "head");
+		let torso = this.game.add.sprite(500 + this.init_offset_x, 300 + this.init_offset_y, "torso");
+
+		let leg_upperfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "leg_upperfront");
+		let leg_lowerfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "leg_lowerfront");
+
+		let arm_upperfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "arm_upperfront");
+		let arm_lowerfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "arm_lowerfront");
+
+		
 
 		this.player.arm_upperfront = arm_upperfront;
 		this.player.arm_upperback = arm_upperback;
@@ -112,6 +118,7 @@ Mountaineer.FinalGame.prototype = {
 		this.player.leg_lowerfront = leg_lowerfront;
 		this.player.leg_lowerback = leg_lowerback;
 		this.player.head = head;
+		this.player.torso = torso;
 
 		//torso.body.static = true;
 
@@ -120,11 +127,12 @@ Mountaineer.FinalGame.prototype = {
 		let pickaxe_front = this.game.add.sprite(500 + this.init_offset_x, 200 + this.init_offset_y, "pickaxe");
 		let pickaxe_back = this.game.add.sprite(250 + this.init_offset_x, 200 + this.init_offset_y, "pickaxe");
 
-		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront]);
+		this.game.physics.box2d.enable([torso,arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront]);
 		this.game.physics.box2d.enable([pickaxe_back, pickaxe_front]);
+		torso.body.restitution = 0.3;
 
 		// Create custom collision for pickaxes 
-		pickaxe_back.body.angle = 90;
+		pickaxe_back.body.angle = 10;
 		pickaxe_front.body.angle = 90;
 		pickaxe_back.body.clearFixtures();
 		pickaxe_front.body.clearFixtures();
@@ -143,26 +151,28 @@ Mountaineer.FinalGame.prototype = {
 
 		let arm_limits = {min:0,max:90}
 
-		this.game.physics.box2d.revoluteJoint(torso, head, -30, -120, 0, 70, 0, 0, false, -30, 30, limits);
+		this.game.physics.box2d.revoluteJoint(torso, head, -50, -120, 0, 70, 0, 0, false, 20, 20, limits);
 		this.game.physics.box2d.revoluteJoint(torso, arm_upperfront, -40, -100, -5, -60, 0, 5, true, -60, 180, limits);
 		this.game.physics.box2d.revoluteJoint(torso, arm_upperback, -20, -100, -5, -60, 5, 10, true, -60, 180, limits);
 		this.game.physics.box2d.revoluteJoint(arm_upperback, arm_lowerback, 0, 60, 5, -70, 0, 5, true, arm_lowerback.min,arm_limits.max, limits);
 		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, -20, 160, limits);
 		this.game.physics.box2d.revoluteJoint(arm_upperfront, arm_lowerfront, 0, 60, -5, -70, 0, 5, true, arm_lowerback.min,arm_limits.max, limits);
 		
-		this.game.physics.box2d.weldJoint(arm_lowerfront, pickaxe_front, 0, 70, 50, 0);
-		this.game.physics.box2d.weldJoint(arm_lowerback, pickaxe_back, 0, 70, 50, 0);
+		this.game.physics.box2d.revoluteJoint(arm_lowerfront, pickaxe_front, 0, 70, 50, 0, 0, 0, false, -80, -80, limits);
+		this.game.physics.box2d.revoluteJoint(arm_lowerback, pickaxe_back, 0, 70, 50, 0, 0, 0, false, -80, -80, limits);
 		
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperback, -30, 110, -5, -60, 0, 2, true, -45, 120, limits);
 		this.game.physics.box2d.revoluteJoint(torso, leg_upperfront, -60, 110, -5, -60, 0, 2, true, -45, 120, limits);
 		this.game.physics.box2d.revoluteJoint(leg_upperfront, leg_lowerfront, 0, 80, 5, -75, 5, 10, true, -140, 10, limits);
 		this.game.physics.box2d.revoluteJoint(leg_upperback, leg_lowerback, 0, 80, 5, -75, 5, 10, true, -140, 10, limits);
 
+		torso.body.static = true; // Start as static 
+
 		//  Create our holy mountain 
 		this.CreateMountain();
 
 		// Define initial axe position
-		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.init_offset_x, this.init_offset_y);
+		//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.init_offset_x, this.init_offset_y);
 
 		// Set up collision masks
 		// Player collides with: env (cat, mask) -> (01, 10) -> (1, 2)
@@ -209,7 +219,6 @@ Mountaineer.FinalGame.prototype = {
 		// Arm switching & welding 
 		this.game.input.onDown.add(this.switchArms, this);
 
-
 		
 
 		// Define some functions 
@@ -220,17 +229,25 @@ Mountaineer.FinalGame.prototype = {
 			let axe = {x:this.player.active_axe.x - this.world.pivot.x,y:this.player.active_axe.y - this.world.pivot.y}; 
 			let dx = mouse.x - axe.x; 
 			let dy = mouse.y - axe.y; 
+			let dist = Math.sqrt(dx * dx + dy * dy);
+			dx /= dist; 
+			dy /= dist;
+			 
+			// Apply angular velocity to get angle to 0 
+			// What's the shortest angle between 0 and this angle?
+			// let angle = Math.atan2(dy,dx) + Math.PI/2;
+			// let shortestAngle = this.util.aDiff(angle,0);
+			// this.player.active_axe.body.angularVelocity = shortestAngle * 5;
 
-			this.player.active_axe.body.velocity.x = 10 * dx; 
-			this.player.active_axe.body.velocity.y = 10 * dy; 
+			this.player.active_axe.body.applyForce(dx * 1000,dy * 1000);
 
 		}
 
 		this.CameraUpdate = function(){
 			let targetX = this.player.active_axe.x - 800;
 			let targetY = this.player.active_axe.y - 400;
-			this.world.pivot.x = targetX;
-			this.world.pivot.y = targetY;
+			this.world.pivot.x += (targetX - this.world.pivot.x) * 0.16;
+			this.world.pivot.y += (targetY - this.world.pivot.y) * 0.16;
 		}
 
 	},
@@ -242,10 +259,10 @@ Mountaineer.FinalGame.prototype = {
 		this.player.active_axe = this.player.inactive_axe;
 		this.player.inactive_axe = temp;
 		
-		this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
+		//this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
 		//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.init_offset_x, this.init_offset_y);
 
-		this.collideWithNearestVertex();
+		//this.collideWithNearestVertex();
 
 	},
 	collideWithNearestVertex: function() {
@@ -279,6 +296,14 @@ Mountaineer.FinalGame.prototype = {
 	update: function () {
 		this.UpdateArms();
 		this.CameraUpdate();
+
+		if(this.player.torso.body.static == true){
+			this.init_counter ++;
+			if(this.init_counter > 60 * 5){
+				this.player.torso.body.static = false;
+			}
+		}
+		
 	},
 	render: function () {
 		// this.game.debug.box2dWorld();
