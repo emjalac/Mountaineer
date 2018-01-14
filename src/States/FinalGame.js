@@ -168,8 +168,6 @@ Mountaineer.FinalGame.prototype = {
 		this.background4 = this.add.sprite(this.init_offset_x+300, this.init_offset_y-2300,'background');
 		this.background_mountain = this.add.sprite(this.init_offset_x-1300, this.init_offset_y-3350,'backgroundmountain');
 
-		// Add flag
-
 		// Enable physics system
 	    this.game.physics.startSystem(Phaser.Physics.BOX2D);
     	this.game.physics.box2d.gravity.y = 500;
@@ -263,6 +261,9 @@ Mountaineer.FinalGame.prototype = {
 		//  Create our holy mountain 
 		this.CreateMountain();
 
+    	// Add flag
+		this.flag = this.add.sprite(700, -34,'flag');
+
 		// Define initial axe position
 		//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.init_offset_x, this.init_offset_y);
 
@@ -337,8 +338,10 @@ Mountaineer.FinalGame.prototype = {
 		this.CameraUpdate = function(){
 			let targetX = this.player.active_axe.x - 800;
 			let targetY = this.player.active_axe.y - 400;
-			this.world.pivot.x += (targetX - this.world.pivot.x) * 0.16;
-			this.world.pivot.y += (targetY - this.world.pivot.y) * 0.16;
+			// this.world.pivot.x += (targetX - this.world.pivot.x) * 0.16;
+			// this.world.pivot.y += (targetY - this.world.pivot.y) * 0.16;
+			this.world.pivot.x = this.flag.x-200;
+			this.world.pivot.y = this.flag.y-300;
 		}
 
 		this.HealthUpdate = function(){
@@ -351,7 +354,7 @@ Mountaineer.FinalGame.prototype = {
 			this.snowFilter.update();
 			// Check if game is over
 			if(this.snowFilter.uniforms.health.value >= 1.0){
-				this.shutdown();
+				this.lose();
 			}
 		}
 
@@ -364,6 +367,13 @@ Mountaineer.FinalGame.prototype = {
 
 			this.mountain.chips = [];
 			this.mountain.chip_delay --;
+		}
+
+		this.CheckDestination = function(){
+			var dist = Math.abs(this.flag.x + this.flag.y - this.player.active_axe.x - this.player.active_axe.y);
+			if(dist < 20){
+				this.win();
+			}
 		}
 
 	},
@@ -562,6 +572,7 @@ Mountaineer.FinalGame.prototype = {
 		this.CameraUpdate();
 		this.HealthUpdate();
 		this.MountainUpdate();
+		this.CheckDestination();
 
 		if(this.player.sustainedUpwards){
 			this.player.head.body.velocity.y = -1000;
@@ -585,7 +596,14 @@ Mountaineer.FinalGame.prototype = {
 		this.world.scale.setTo(1,1);
 		this.snowFilter.destroy();
 		this.stage.filters = null;
+	},
+	lose: function (){
+		this.shutdown();
 		this.state.start('GameOverMenu');
+	},
+	win: function() {
+		this.shutdown();
+		this.state.start('WinMenu');
 	}
 };
 
