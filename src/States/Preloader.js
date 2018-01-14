@@ -21,7 +21,7 @@ Mountaineer.Preloader.prototype = {
 			"leg_upperback",
 			"leg_lowerback",
 			"head",
-			"pickaxe",
+			"pickaxe"
 		];
 		var physics = ["pickaxe_body"];
 		
@@ -30,6 +30,10 @@ Mountaineer.Preloader.prototype = {
 		this.load.image("title_screen","assets/images/title_screen.png");
 		this.load.image("background","assets/images/background.png");
 		this.load.image("backgroundmountain","assets/images/backgroundmountain.png");
+		this.load.images("backgroundcolor", "assets/images/backgroundcolor.png");
+
+		//flag;
+		this.load.images("flag", "assets/images/flag.png");
 
 		var i;
 		// for(i=0;i<images.length;i++) {
