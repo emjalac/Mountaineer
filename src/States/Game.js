@@ -39,8 +39,6 @@ Mountaineer.Game.prototype = {
 		var head;
 		var pickaxe_back;
 		var pickaxe_front;
-		var pickaxe_front_body;
-		var pickaxe_back_body;
 	
 		//Environment
 		environment = this.game.add.group();
@@ -73,11 +71,8 @@ Mountaineer.Game.prototype = {
 		this.game.physics.box2d.enable([pickaxe_back, pickaxe_front]);
 		pickaxe_back.body.angle = 90;
 		pickaxe_front.body.angle = 90;
-		// pickaxe_front.body.setRectangle(30,200,-90,0);
-		// pickaxe_back.body.setRectangle(30,200,-90,0);
 		pickaxe_back.body.clearFixtures();
 		pickaxe_front.body.clearFixtures();
-		console.log()
 		pickaxe_back.body.setPolygon([27-130,4-110 , 61-130,3-110 , 51-130,77-110 , 71-130,87-110 , 73-130,107-110 , 56-130,119-110 , 67-130,217-110 , 28-130,117-110 , 3-130,99-110 , 31-130,80-110]);
 		pickaxe_front.body.setPolygon([27-130,4-110 , 61-130,3-110 , 51-130,77-110 , 71-130,87-110 , 73-130,107-110 , 56-130,119-110 , 67-130,217-110 , 28-130,117-110 , 3-130,99-110 , 31-130,80-110]);
 
@@ -179,13 +174,13 @@ Mountaineer.Game.prototype = {
 	shutdown: function(){
 	},
 	switchArms: function() {
-		this.player.active_arm.body.velocity.x = 0;
-		this.player.active_arm.body.velocity.y = 0;
+		this.player.active_axe.body.velocity.x = 0;
+		this.player.active_axe.body.velocity.y = 0;
 
-		var temp = this.player.active_arm;
+		var temp = this.player.active_axe;
 
-		this.player.active_arm = this.player.inactive_arm;
-		this.player.inactive_arm = temp;
+		this.player.active_axe = this.player.inactive_axe;
+		this.player.inactive_axe = temp;
 
 
 
