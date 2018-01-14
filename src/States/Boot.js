@@ -6,7 +6,7 @@ Mountaineer.Boot = function (game) {
 
 Mountaineer.Boot.prototype = {
     init: function () {
-        this.stage.backgroundColor = "#f8f8f8";
+        this.stage.backgroundColor = "#8992a1";
 
         this.input.maxPointers = 1;
         //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
@@ -49,8 +49,8 @@ Mountaineer.Boot.prototype = {
     },
 
     preload: function () {
-       this.load.image("loading-screen","assets/images/loading-screen.png");
-       this.load.image("loading-bar","assets/images/loading-bar.png");
+       this.load.image("loadingscreen","assets/images/loadingscreen.png");
+       this.load.image("loadingbar","assets/images/loadingbar.png");
        this.load.onLoadComplete.add(this.loadComplete, this);
     },
     loadComplete: function(){

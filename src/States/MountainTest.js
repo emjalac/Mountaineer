@@ -1,10 +1,69 @@
 Mountaineer.MountainTest = function (game) {
 	this.util = new Util(game);
 
+	this.snowShader = 
+	`
+	precision mediump float; 
+
+	#define LAYERS 5
+
+	varying vec2 vTextureCoord; 
+	uniform sampler2D uSampler; 
+	uniform float     time;
+	uniform float 	  health; 
+
+	float snowing(vec2 uv){
+	 const mat3 p = mat3(13.323122,23.5112,21.71123,21.1212,28.7312,11.9312,21.8112,14.7212,61.3934);
+
+	 float depth = 0.1;
+	 float width = 0.5;
+	 float speed = 4.0;
+	   
+	   
+	 float acc = 0.0;
+	 float dof = 5.0 * sin(time * 0.1);
+	 for (int i=0; i < LAYERS; i++)
+	 {
+	   float fi = float(i*15);
+	   vec2 q = uv * (1.0 + fi*depth); // Controls size and number 
+	   float w = width * mod(fi*7.238917,1.0)-width*0.1*sin(time*2.+fi);
+	   q += vec2(q.y*w, speed*time / (1.0+fi*depth*0.03));
+	   vec3 n = vec3(floor(q),31.189+fi);
+	   vec3 m = floor(n)*0.00001 + fract(n);
+	   vec3 mp = (31415.9+m) / fract(p*m);
+	   vec3 r = fract(mp);
+	   vec2 s = abs(mod(q,1.0) -0.5 +0.9*r.xy -0.45);
+	   s += 0.01*abs(2.0*fract(10.*q.yx)-1.); // Controls the size
+	   float d = 0.6*max(s.x-s.y,s.x+s.y)+max(s.x,s.y)-.01;
+	   float edge = 0.05 +0.05*min(.5*abs(fi-5.-dof),1.);
+	   acc += smoothstep(edge,-edge,d)*(r.x/(1.+.02*fi*depth));
+	 }
+	 return acc;
+	}
+
+	void main(void){
+		vec2 pos = vTextureCoord;
+		vec4 color = texture2D(uSampler, pos);
+		float snowFactor = snowing(pos);
+
+		color.r += snowFactor * 0.9;
+		color.g += snowFactor;
+		color.b += snowFactor * 1.1;
+
+		color.rgb += health;
+	
+		gl_FragColor = color;
+	}
+	`
+
 };
 
 Mountaineer.MountainTest.prototype = {
 	create: function () {
+		this.snowFilter = new Phaser.Filter(this.game,null,this.snowShader);
+		this.snowFilter.uniforms.health = {type:'1f', value: 0.0};
+		this.stage.filters = [this.snowFilter];
+
 		// Initialize the mountain
 		let mountain_vertices = [
 			0,5376,
@@ -113,6 +172,10 @@ Mountaineer.MountainTest.prototype = {
 
 	},
 	update: function () {
+
+		//this.snowFilter.uniforms.health.value = ((this.util.pointerPos().y * 8) / this.stage.height);
+		this.snowFilter.update();
+
 		if(!this.dragging && this.util.pointerDown()){
 			this.dragging = true;
 			this.dragPosition = this.util.pointerPos();
@@ -152,7 +215,8 @@ Mountaineer.MountainTest.prototype = {
 		this.camera.x = 0;
 		this.camera.y = 0;
 		this.camera.scale.setTo(1,1);
-
+		this.snowFilter.destroy();
+		this.stage.filters = null;
 	},
 
 	chipMountain: function(x,y){
@@ -179,6 +243,7 @@ Mountaineer.MountainTest.prototype = {
 	            closestIndex = i;
 	        }
 	    }
+
 	    // 2- To find the next point, it has to be one of these 
 	    let p = {x:vertices[closestIndex],y:vertices[closestIndex+1]};
 	    let p1 = {x:vertices[closestIndex+2],y:vertices[closestIndex+3]};
@@ -189,6 +254,7 @@ Mountaineer.MountainTest.prototype = {
 	    let final_angle = this.util.aDiff(0,this.util.aDiff(angle_closest_to_mouse,angle_next_to_closest))
 
 	    let nextIndex;
+	    let dir = 1;
 
 	    if(Math.abs(this.util.radToDeg(final_angle)) < 90){
 	        // It's the next 
@@ -196,17 +262,54 @@ Mountaineer.MountainTest.prototype = {
 	    } else {
 	        // It's the prev 
 	        nextIndex = closestIndex - 2;
+	        dir = -1;
 	    }
+
+		// If thse two points are new, do NOT add anything new
 
 	   // 3 - Now add an extra vertix between these two 
 	   let newP = {x:0,y:0};
 	   let nextP = {x:vertices[nextIndex],y:vertices[nextIndex+1]};
-	   newP.x = (p.x+nextP.x)/2;
-	   newP.y = (p.y+nextP.y)/2;
-	   newP.y += 15;
+
+	   let dx = (p.x - worldX);
+	   let dy = (p.y - worldY);
+	   let dist = Math.sqrt(dx * dx + dy * dy);
+	   let total_dx = (p.x - nextP.x);
+	   let total_dy = (p.y - nextP.y);
+	   let total_dist = Math.sqrt(total_dx * total_dx + total_dy * total_dy);
+	   let finalFactor = 1 - (dist / total_dist);
+
+	   newP.x = nextP.x + (p.x-nextP.x) * finalFactor;
+	   newP.y = nextP.y + (p.y-nextP.y) * finalFactor;
+	   newP.x = Math.round(newP.x);
+	   newP.y = Math.round(newP.y);
+	   
+	   let angle = Math.atan2(nextP.y-p.y,nextP.x  - p.x);
+
+	   let pushAngle  = angle + Math.PI/2 * dir;
+
+	   let depth = 40;
+	   newP.x += Math.cos(pushAngle) * -depth;
+	   newP.y += Math.sin(pushAngle) * -depth;
+
+	   // Add two more 
+	   let newP1 = {x:0,y:0};
+	   newP1.x = nextP.x + (p.x-nextP.x) * (finalFactor + 0.1 * dir);
+	   newP1.y = nextP.y + (p.y-nextP.y) * (finalFactor + 0.1 * dir);
+	   newP1.x = Math.round(newP1.x);
+	   newP1.y = Math.round(newP1.y);
+
+	   let newP2 = {x:0,y:0};
+	   newP2.x = nextP.x + (p.x-nextP.x) * (finalFactor - 0.1 * dir);
+	   newP2.y = nextP.y + (p.y-nextP.y) * (finalFactor - 0.1 * dir);
+	   newP2.x = Math.round(newP2.x);
+	   newP2.y = Math.round(newP2.y);
+
 	   let smallerIndex = closestIndex;
 	   if(nextIndex < smallerIndex) smallerIndex = nextIndex;
-	   vertices.splice(smallerIndex+2,0,newP.x,newP.y);
+	   vertices.splice(smallerIndex+2,0,newP1.x,newP1.y,newP.x,newP.y,newP2.x,newP2.y);
+
+
 	   this.mountain_body.setPolygon(vertices);
 
 	   // Update graphics

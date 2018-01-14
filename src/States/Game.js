@@ -3,6 +3,8 @@ Mountaineer.Game = function (game) {
 	this.util = new Util(game);
 	this.dragging = false;
 	this.player = {};
+	this.mountain = {};
+	this.collision = {};
 
 };
 
@@ -50,13 +52,18 @@ Mountaineer.Game.prototype = {
 		this.game.physics.box2d.enable(ground);
 		ground.body.static = true;
 
+		this.mountain.joint = environment.create(0, 400, "wall");
+		this.game.physics.box2d.enable(this.mountain.joint);
+		this.mountain.joint.body.static = true;
+
 		// Player
 		player = this.game.add.group();
 		torso = player.create(200, 300, "torso");
 		torso.enableBody = true;
 		this.game.physics.box2d.enable(torso);
 		torso.body.restitution = 0.3;
-		torso.body.static = true;
+		//torso.body.static = true;
+		this.player.torso = torso;
 
 		arm_upperfront = this.game.add.sprite(250, 245, "arm_upperfront");
 		arm_upperback = this.game.add.sprite(250, 245, "arm_upperback");
@@ -68,7 +75,7 @@ Mountaineer.Game.prototype = {
 		leg_lowerback = this.game.add.sprite(250, 245, "leg_lowerback");
 		head = this.game.add.sprite(250, 200, "head");
 
-		pickaxe_front = this.game.add.sprite(250, 200, "pickaxe");
+		pickaxe_front = this.game.add.sprite(500, 200, "pickaxe");
 		pickaxe_back = this.game.add.sprite(250, 200, "pickaxe");
 		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront]);
 		this.game.physics.box2d.enable([pickaxe_back, pickaxe_front]);
@@ -84,6 +91,11 @@ Mountaineer.Game.prototype = {
 		this.player.active_axe.y = 200;
 		this.player.inactive_axe.x = 250;
 		this.player.inactive_axe.y = 200;
+
+		//this.player.torso_move_speed_min = 10;
+
+		//Define initial axe position
+		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain.joint);
 
 		var limits = true;
 
@@ -103,61 +115,56 @@ Mountaineer.Game.prototype = {
 		this.game.physics.box2d.revoluteJoint(leg_upperfront, leg_lowerfront, 0, 80, 5, -75, 5, 10, true, -140, 10, limits);
 		this.game.physics.box2d.revoluteJoint(leg_upperback, leg_lowerback, 0, 80, 5, -75, 5, 10, true, -140, 10, limits);
 
-		// Glow
-		// pickaxe_front.filters = [this.game.add.filter('Glow')];
-		pickaxe_back.filters = [this.game.add.filter('Glow')];
-		//Add a mask for the glow
-		var bmd = this.game.add.bitmapData(25,15);
-		bmd.ctx.beginPath();
-	    bmd.ctx.rect(0,0,25,15);
-	    bmd.ctx.fillStyle = '#ffffff';
-	    bmd.ctx.fill();
-		var glow = this.game.add.sprite(100, 100, bmd);
-		this.game.physics.box2d.enable(glow);
-		this.game.physics.box2d.weldJoint(pickaxe_front, glow, -80, -10, 0, 0);
-		glow.filters = [this.game.add.filter('Glow')];
-
 		// Set up collision masks
-		// Player collides with: env (cat, mask) -> (01, 10) -> (1, 2)
-		// Environment collides with: env, player (cat, mask) -> (10, 11) -> (2, 3)
+		// Player collides with: nothing (cat, mask) -> (001, 000) -> (1, 0)
+		// Environment collides with: env, axe (cat, mask) -> (010, 110) -> (2, 6)
+		// Axe collides with: env (cat, mask) -> (100, 010) -> (4, 2)
 
 		this.PLAYER_CAT = 1;
-		this.PLAYER_MASK = 2;
+		this.PLAYER_MASK = 0;
 		this.ENV_CAT = 2;
-		this.ENV_MASK = 3;
+		this.ENV_MASK = 6;
+		this.AXE_CAT = 4;
+		this.AXE_MASK = 2;
 
 		torso.body.setCollisionCategory(this.PLAYER_CAT);
 		arm_upperfront.body.setCollisionCategory(this.PLAYER_CAT);
 		arm_upperback.body.setCollisionCategory(this.PLAYER_CAT);
 		arm_lowerfront.body.setCollisionCategory(this.PLAYER_CAT);
 		arm_lowerback.body.setCollisionCategory(this.PLAYER_CAT);
-		leg_upperfront.body.setCollisionCategory(this.PLAYER_CAT);
-		leg_upperback.body.setCollisionCategory(this.PLAYER_CAT);		
-		leg_lowerfront.body.setCollisionCategory(this.PLAYER_CAT);
-		leg_lowerback.body.setCollisionCategory(this.PLAYER_CAT);
+		leg_upperfront.body.setCollisionCategory(this.AXE_CAT);
+		leg_upperback.body.setCollisionCategory(this.AXE_CAT);		
+		leg_lowerfront.body.setCollisionCategory(this.AXE_CAT);
+		leg_lowerback.body.setCollisionCategory(this.AXE_CAT);
 		head.body.setCollisionCategory(this.PLAYER_CAT);
-		pickaxe_front.body.setCollisionCategory(this.PLAYER_CAT);
-		pickaxe_back.body.setCollisionCategory(this.PLAYER_CAT);
+		pickaxe_front.body.setCollisionCategory(this.AXE_CAT);
+		pickaxe_back.body.setCollisionCategory(this.AXE_CAT);
 		ground.body.setCollisionCategory(this.ENV_CAT);
+		this.mountain.joint.body.setCollisionCategory(this.ENV_CAT);
+		
 
 		torso.body.setCollisionMask(this.PLAYER_MASK);
 		arm_upperfront.body.setCollisionMask(this.PLAYER_MASK);
 		arm_upperback.body.setCollisionMask(this.PLAYER_MASK);
 		arm_lowerfront.body.setCollisionMask(this.PLAYER_MASK);
 		arm_lowerback.body.setCollisionMask(this.PLAYER_MASK);
-		leg_upperfront.body.setCollisionMask(this.PLAYER_MASK);
-		leg_upperback.body.setCollisionMask(this.PLAYER_MASK);					
-		leg_lowerfront.body.setCollisionMask(this.PLAYER_MASK);
-		leg_lowerback.body.setCollisionMask(this.PLAYER_MASK);
+		leg_upperfront.body.setCollisionMask(this.AXE_MASK);
+		leg_upperback.body.setCollisionMask(this.AXE_MASK);					
+		leg_lowerfront.body.setCollisionMask(this.AXE_MASK);
+		leg_lowerback.body.setCollisionMask(this.AXE_MASK);
 		head.body.setCollisionMask(this.PLAYER_MASK);
-		pickaxe_front.body.setCollisionMask(this.PLAYER_MASK);
-		pickaxe_back.body.setCollisionMask(this.PLAYER_MASK);
+		pickaxe_front.body.setCollisionMask(this.AXE_MASK);
+		pickaxe_back.body.setCollisionMask(this.AXE_MASK);
 		ground.body.setCollisionMask(this.ENV_MASK);
+		this.mountain.joint.body.setCollisionMask(this.ENV_MASK);
+
+		// Set up call back function for pickaxe colliding with mountain
+		// pickaxe_front.body.setBodyContactCallback(mountain.body, checkCollision, this);
+		// pickaxe_back.body.setBodyContactCallback(mountain.body, checkCollision, this);
 
 		// Set up handlers for mouse events
-	    this.game.input.onDown.add(this.switchArms, this);
-	    //this.game.input.addMoveCallback(this.movePlayerArm, this);
-	    //this.game.input.onUp.add(this.mouseDragEnd, this);
+	    this.game.input.onDown.add(this.onClick, this);
+
 
 	},
 	update: function(){
@@ -167,6 +174,8 @@ Mountaineer.Game.prototype = {
 		var axe_y;
 		var axe_to_mouse_dst_x;
 		var axe_to_mouse_dst_y;
+
+		var cur_mouse_x =
 
 		mouse_x = this.util.pointerPos().x;
 		mouse_y = this.util.pointerPos().y;
@@ -179,24 +188,39 @@ Mountaineer.Game.prototype = {
 
 		this.player.active_axe.body.velocity.x = 10*axe_to_mouse_dst_x;
 		this.player.active_axe.body.velocity.y = 10*axe_to_mouse_dst_y;
+		// if (Math.abs(this.player.active_axe.body.velocity.x) > this.player.torso_move_speed_min){
+		// 	this.player.torso.body.velocity.x = axe_to_mouse_dst_x;
+		// }
 
-		// this.game.add.filter('Glow').update();
+		// if (Math.abs(this.player.active_axe.body.velocity.y) > this.player.torso_move_speed_min){
+		// 	this.player.torso.body.velocity.y = axe_to_mouse_dst_y;
+		// }
 	}, 
 	render: function(){
-    	this.game.debug.box2dWorld();
-    	this.game.physics.box2d.debugDraw.joints = true;
+    	//this.game.debug.box2dWorld();
+    	//this.game.physics.box2d.debugDraw.joints = true;
 	
 	}, 
 	shutdown: function(){
 	},
+
+	onClick: function(){
+		this.switchArms();
+		this.weldAxeToMountain();
+	},
 	switchArms: function() {
 		this.player.active_axe.body.velocity.x = 0;
 		this.player.active_axe.body.velocity.y = 0;
-
 		var temp = this.player.active_axe;
-
 		this.player.active_axe = this.player.inactive_axe;
 		this.player.inactive_axe = temp;
+	},
+	weldAxeToMountain: function() {
+		this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
+		//console.log(this.player.axe_joint);
+		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain.joint);
+	},
+	checkCollision: function(){
 	},
 	mouseDragStart: function() {
 	    this.game.physics.box2d.mouseDragStart(this.game.input.mousePointer);  

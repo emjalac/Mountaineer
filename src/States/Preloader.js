@@ -9,7 +9,6 @@ Mountaineer.Preloader = function (game) {
 
 Mountaineer.Preloader.prototype = {
 	preload: function () {
-		var images = ["bomb"];
 		// Climber's body
 		var character_images = [
 			"torso",
@@ -22,15 +21,20 @@ Mountaineer.Preloader.prototype = {
 			"leg_upperback",
 			"leg_lowerback",
 			"head",
-			"pickaxe",
-			"pickaxe20"
+			"pickaxe"
 		];
 		var physics = ["pickaxe_body"];
 		
+		//var wall;
+		this.load.image("wall","assets/images/body.png");
+		this.load.image("title_screen","assets/images/title_screen.png");
+		this.load.image("background","assets/images/background.png");
+		this.load.image("backgroundmountain","assets/images/backgroundmountain.png");
+
 		var i;
-		for(i=0;i<images.length;i++) {
-			this.load.image(images[i],"assets/images/"+images[i]+".png");
-		}
+		// for(i=0;i<images.length;i++) {
+		// 	this.load.image(images[i],"assets/images/"+images[i]+".png");
+		// }
 		for(i=0;i<character_images.length;i++) {
 			this.load.image(character_images[i],"assets/images/character/"+character_images[i]+".png");
 		}
@@ -51,12 +55,29 @@ Mountaineer.Preloader.prototype = {
 			this.load.spritesheet(sheetName,"assets/sheets/"+sheetName+".png",sheetWidth,sheetHeight,frames);
 		}
 
+		// Load audio 
+		let audio = [
+			'ambience',
+			'crumblingrockparticles',
+			'endgamemusic',
+			'mutedambience',
+			'pickaxesecurefeedback',
+			'pickaxestrike',
+			'pickaxetap'
+		];
+		for(i=0;i<audio.length;i++){
+			let audio_file = "assets/audio/" + audio[i] + ".ogg";
+			this.load.audio(audio[i] ,audio_file);
+		}
+
 		this.load.onFileComplete.add(this.fileComplete, this);
 		this.load.onLoadComplete.add(this.loadComplete, this);
 
-		this.loadingScreen = this.add.sprite(0,0,"loading-screen");
-		this.loadingBar = this.add.sprite(295,403,"loading-bar");
+		this.loadingScreen = this.add.sprite(0,0,"loadingscreen");
+		this.loadingBar = this.add.sprite(430,600,"loadingbar");
 		this.loadingBarWidth = this.loadingBar.width;
+
+		this.loadingScreen.scale.setTo(1280/1920);
 
 	},
 	create: function () {
@@ -73,8 +94,5 @@ Mountaineer.Preloader.prototype = {
 	destroy: function(){
 		this.loadingBar.destroy();
 		this.loadingScreen.destroy();
-	},
-	capitalize: function(str){
-	    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 	}
 };
