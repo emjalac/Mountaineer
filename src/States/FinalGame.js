@@ -93,14 +93,14 @@ Mountaineer.FinalGame = function (game) {
 
 			var triangles = earcut(vertices);
 
-			for(let i=2;i<vertices.length;i+=2){
-				let x = vertices[i];
-				let y = vertices[i+1];
+			// for(let i=2;i<vertices.length;i+=2){
+			// 	let x = vertices[i];
+			// 	let y = vertices[i+1];
 
-				this.beginFill(0xFF0000);
-				this.drawCircle(x,y,10);
-				this.endFill();
-			}
+			// 	this.beginFill(0xFF0000);
+			// 	this.drawCircle(x,y,10);
+			// 	this.endFill();
+			// }
 
 			for(let i=0;i<triangles.length;i+=3){
 				let index1 = triangles[i]*2;
@@ -125,6 +125,22 @@ Mountaineer.FinalGame = function (game) {
 		this.mountain.body = new Phaser.Physics.Box2D.Body(this.game, null, 0, 0, 0);
     	this.mountain.body.static = true; 
     	this.mountain.body.setPolygon(mountain_vertices);
+    	this.mountain.body.isMountain = true;
+    	this.mountain.chips = []; // Keep track of chip requests from collision callbacks to resolve them later (can't change bodies during collision step)
+
+    	this.mountain.blacklist = {};
+    	this.mountain.isPointBlack = function(x,y){
+    		let hash = String(x) + "x" + String(y);
+    		if(this.blacklist[hash])
+    			return true;
+    		return false;
+    	}
+    	this.mountain.markPointBlack = function(x,y){
+    		let hash = String(x) + "x" + String(y);
+    		this.blacklist[hash] = true;
+    	}
+
+    	this.mountain.chip_delay = 0;
 
 	}
 };
@@ -228,6 +244,10 @@ Mountaineer.FinalGame.prototype = {
 
 		torso.body.static = true; // Start as static 
 
+		// Label the pickaxe 
+		pickaxe_back.body.isPickaxe = true;
+		pickaxe_front.body.isPickaxe = true;
+
 		//  Create our holy mountain 
 		this.CreateMountain();
 
@@ -315,6 +335,17 @@ Mountaineer.FinalGame.prototype = {
 			this.snowFilter.update();
 		}
 
+		this.MountainUpdate = function(){
+			for(let i=0;i<this.mountain.chips.length;i++){
+				let chip = this.mountain.chips[i];
+				this.chipMountain(chip.x,chip.y,chip.depth);
+			}
+			
+
+			this.mountain.chips = [];
+			this.mountain.chip_delay --;
+		}
+
 	},
 	switchArms: function() {
 		this.player.active_axe.body.velocity.x = 0;
@@ -322,8 +353,7 @@ Mountaineer.FinalGame.prototype = {
 
 		let temp = this.player.active_axe;
 		this.player.active_axe = this.player.inactive_axe;
-		this.player.inactive_axe = temp;
-		
+		this.player.inactive_axe = temp;		
 		//this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
 		//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.init_offset_x, this.init_offset_y);
 
@@ -347,21 +377,142 @@ Mountaineer.FinalGame.prototype = {
 		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.mountain.vertices[index], this.mountain.vertices[index+1]);
 
 	},
-	checkCollision: function(){
-		console.log("You hit the mountain");
+	checkCollision: function(body1,body2,fixture1,fixture2,begin){
+		if(body1.isPickaxe && body2.isMountain){
+			let v = body1.velocity;
+			let len = Math.sqrt(v.x * v.x + v.y * v.y);
+			if(len >= 1500){
+				//chip away at terrain
+				let min = 1500;
+				let max = 4000;
+				let depth = ((len-min) / (max-min)) * 100 ;
+				console.log(len);
+				if(this.mountain.chips.length < 1 && this.mountain.chip_delay <= 0){
+					this.mountain.chips.push({x:body1.x,y:body1.y,depth:depth});
+				}
+				
+				//animated rocks/ice falling from chipping at terrain
+			}
+			
+		}
+		
 
-		//chip away at terrain
-
-		//animated rocks/ice falling from chipping at terrain
 
 
 
+	},
+	chipMountain: function(x,y,depth){
+		// let scale = this.world.scale.x;
+		// let worldX = x / scale + this.world.pivot.x;
+		// let worldY = y / scale + this.world.pivot.y; 
+		let worldX = x;
+		let worldY = y;
+		this.mountain.chip_delay = 60;
+		
+		let vertices = this.mountain.vertices;
+
+		// Find the points before and after this in the vertices array 
+	    let cPoint = {x:worldX,y:worldY};
+	    // 1- Find the closest point
+	    let closestIndex = 0;
+	    let closestDist = -1; 
+	    for(let i=0;i<vertices.length;i+=2){
+	        let p = {x:vertices[i],y:vertices[i+1]};
+	        let dist = Math.sqrt(Math.pow(p.x-cPoint.x,2) + Math.pow(p.y-cPoint.y,2))
+	        if(closestDist == -1){
+	            closestDist = dist;
+	            closestIndex = i;
+	        }
+	        if(closestDist > dist){
+	            closestDist = dist; 
+	            closestIndex = i;
+	        }
+	    }
+	    // 2- To find the next point, it has to be one of these 
+	    let p = {x:vertices[closestIndex],y:vertices[closestIndex+1]};
+	    let p1 = {x:vertices[closestIndex+2],y:vertices[closestIndex+3]};
+	    let p2 = {x:vertices[closestIndex-2],y:vertices[closestIndex-1]};
+
+	    let angle_closest_to_mouse = Math.atan2(cPoint.y - p.y,cPoint.x - p.x);
+	    let angle_next_to_closest = Math.atan2(p1.y - p.y,p1.x - p.x);
+	    let final_angle = this.util.aDiff(0,this.util.aDiff(angle_closest_to_mouse,angle_next_to_closest))
+
+	    let nextIndex;
+	    let dir = 1;
+
+	    if(Math.abs(this.util.radToDeg(final_angle)) < 90){
+	        // It's the next 
+	        nextIndex = closestIndex + 2;   
+	    } else {
+	        // It's the prev 
+	        nextIndex = closestIndex - 2;
+	        dir = -1;
+	    }
+
+
+	   // 3 - Now add an extra vertix between these two 
+	   let newP = {x:0,y:0};
+	   let nextP = {x:vertices[nextIndex],y:vertices[nextIndex+1]};
+
+	   // If thse two points are new, do NOT add anything new
+	   if(this.mountain.isPointBlack(p.x,p.y) && this.mountain.isPointBlack(nextP.x,nextP.y))
+	   	return;
+
+	   let dx = (p.x - worldX);
+	   let dy = (p.y - worldY);
+	   let dist = Math.sqrt(dx * dx + dy * dy);
+	   let total_dx = (p.x - nextP.x);
+	   let total_dy = (p.y - nextP.y);
+	   let total_dist = Math.sqrt(total_dx * total_dx + total_dy * total_dy);
+	   let finalFactor = 1 - (dist / total_dist);
+
+	   newP.x = nextP.x + (p.x-nextP.x) * finalFactor;
+	   newP.y = nextP.y + (p.y-nextP.y) * finalFactor;
+	   newP.x = Math.round(newP.x);
+	   newP.y = Math.round(newP.y);
+	   
+	   let angle = Math.atan2(nextP.y-p.y,nextP.x  - p.x);
+
+	   let pushAngle  = angle + Math.PI/2 * dir;
+
+	   newP.x += Math.cos(pushAngle) * -depth;
+	   newP.y += Math.sin(pushAngle) * -depth;
+	   this.mountain.markPointBlack(newP.x,newP.y);
+
+	   // Add two more 
+	   let newP1 = {x:0,y:0};
+	   newP1.x = nextP.x + (p.x-nextP.x) * (finalFactor + 0.1 * dir);
+	   newP1.y = nextP.y + (p.y-nextP.y) * (finalFactor + 0.1 * dir);
+	   newP1.x = Math.round(newP1.x);
+	   newP1.y = Math.round(newP1.y);
+	   this.mountain.markPointBlack(newP1.x,newP1.y);
+
+	   let newP2 = {x:0,y:0};
+	   newP2.x = nextP.x + (p.x-nextP.x) * (finalFactor - 0.1 * dir);
+	   newP2.y = nextP.y + (p.y-nextP.y) * (finalFactor - 0.1 * dir);
+	   newP2.x = Math.round(newP2.x);
+	   newP2.y = Math.round(newP2.y);
+	   this.mountain.markPointBlack(newP2.x,newP2.y);
+
+
+
+	   let smallerIndex = closestIndex;
+	   if(nextIndex < smallerIndex) smallerIndex = nextIndex;
+	   vertices.splice(smallerIndex+2,0,newP1.x,newP1.y,newP.x,newP.y,newP2.x,newP2.y);
+	   this.mountain.body.setPolygon(vertices);
+	   this.mountain.body.isMountain = true;
+	   this.mountain.body.setCollisionCategory(this.ENV_CAT);
+		this.mountain.body.setCollisionCategory(this.ENV_CAT);
+
+	   // Update graphics
+	   this.mountain.graphics.redraw(vertices);
 
 	},
 	update: function () {
 		this.UpdateArms();
 		this.CameraUpdate();
 		this.HealthUpdate();
+		this.MountainUpdate();
 
 		if(this.player.torso.body.static == true){
 			this.init_counter ++;

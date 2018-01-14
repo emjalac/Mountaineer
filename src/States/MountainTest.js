@@ -243,6 +243,7 @@ Mountaineer.MountainTest.prototype = {
 	            closestIndex = i;
 	        }
 	    }
+
 	    // 2- To find the next point, it has to be one of these 
 	    let p = {x:vertices[closestIndex],y:vertices[closestIndex+1]};
 	    let p1 = {x:vertices[closestIndex+2],y:vertices[closestIndex+3]};
@@ -253,6 +254,7 @@ Mountaineer.MountainTest.prototype = {
 	    let final_angle = this.util.aDiff(0,this.util.aDiff(angle_closest_to_mouse,angle_next_to_closest))
 
 	    let nextIndex;
+	    let dir = 1;
 
 	    if(Math.abs(this.util.radToDeg(final_angle)) < 90){
 	        // It's the next 
@@ -260,17 +262,54 @@ Mountaineer.MountainTest.prototype = {
 	    } else {
 	        // It's the prev 
 	        nextIndex = closestIndex - 2;
+	        dir = -1;
 	    }
+
+		// If thse two points are new, do NOT add anything new
 
 	   // 3 - Now add an extra vertix between these two 
 	   let newP = {x:0,y:0};
 	   let nextP = {x:vertices[nextIndex],y:vertices[nextIndex+1]};
-	   newP.x = (p.x+nextP.x)/2;
-	   newP.y = (p.y+nextP.y)/2;
-	   newP.y += 15;
+
+	   let dx = (p.x - worldX);
+	   let dy = (p.y - worldY);
+	   let dist = Math.sqrt(dx * dx + dy * dy);
+	   let total_dx = (p.x - nextP.x);
+	   let total_dy = (p.y - nextP.y);
+	   let total_dist = Math.sqrt(total_dx * total_dx + total_dy * total_dy);
+	   let finalFactor = 1 - (dist / total_dist);
+
+	   newP.x = nextP.x + (p.x-nextP.x) * finalFactor;
+	   newP.y = nextP.y + (p.y-nextP.y) * finalFactor;
+	   newP.x = Math.round(newP.x);
+	   newP.y = Math.round(newP.y);
+	   
+	   let angle = Math.atan2(nextP.y-p.y,nextP.x  - p.x);
+
+	   let pushAngle  = angle + Math.PI/2 * dir;
+
+	   let depth = 40;
+	   newP.x += Math.cos(pushAngle) * -depth;
+	   newP.y += Math.sin(pushAngle) * -depth;
+
+	   // Add two more 
+	   let newP1 = {x:0,y:0};
+	   newP1.x = nextP.x + (p.x-nextP.x) * (finalFactor + 0.1 * dir);
+	   newP1.y = nextP.y + (p.y-nextP.y) * (finalFactor + 0.1 * dir);
+	   newP1.x = Math.round(newP1.x);
+	   newP1.y = Math.round(newP1.y);
+
+	   let newP2 = {x:0,y:0};
+	   newP2.x = nextP.x + (p.x-nextP.x) * (finalFactor - 0.1 * dir);
+	   newP2.y = nextP.y + (p.y-nextP.y) * (finalFactor - 0.1 * dir);
+	   newP2.x = Math.round(newP2.x);
+	   newP2.y = Math.round(newP2.y);
+
 	   let smallerIndex = closestIndex;
 	   if(nextIndex < smallerIndex) smallerIndex = nextIndex;
-	   vertices.splice(smallerIndex+2,0,newP.x,newP.y);
+	   vertices.splice(smallerIndex+2,0,newP1.x,newP1.y,newP.x,newP.y,newP2.x,newP2.y);
+
+
 	   this.mountain_body.setPolygon(vertices);
 
 	   // Update graphics
