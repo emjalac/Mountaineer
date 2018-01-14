@@ -149,6 +149,25 @@ Mountaineer.FinalGame.prototype = {
 	create: function () {
 		//this.input.mouse.requestPointerLock();
 
+
+		// this.game.canvas.addEventListener('mousedown', requestLock);
+		// this.game.canvas.addEventListener("mousemove", mouseMove, false);
+		// let scope = this;
+
+		// function mouseMove(event){
+		// 	if(!scope.real_mouse){
+		// 		scope.real_mouse = {x:1280/2,y:720/2};
+		// 	}
+		// 	scope.real_mouse.x += event.movementX;
+		// 	scope.real_mouse.y += event.movementY;
+		// }
+		// function requestLock() {
+		// 	if(!scope.real_mouse){
+		// 		scope.real_mouse = {x:1280/2,y:720/2};
+		// 	}
+		//     scope.input.mouse.requestPointerLock();
+		// }
+
 		// Play background music 
 		this.background_music = this.add.audio('ambience');
 		//this.background_music.play(null,null,null,true);
@@ -325,6 +344,11 @@ Mountaineer.FinalGame.prototype = {
 		this.UpdateArms = function(){
 			// Move arm towards mouse 
 			let mouse = this.util.pointerPos();
+			if(this.real_mouse){
+				mouse.x = this.real_mouse.x; 
+			mouse.y = this.real_mouse.y;
+			}
+			
 
 			let axe = {x:this.player.active_axe.x - this.world.pivot.x,y:this.player.active_axe.y - this.world.pivot.y}; 
 			let dx = mouse.x - axe.x; 
@@ -357,7 +381,8 @@ Mountaineer.FinalGame.prototype = {
 			this.world.pivot.x += (targetX - this.world.pivot.x) * 0.16;
 			this.world.pivot.y += (targetY - this.world.pivot.y) * 0.16;
 
-
+			this.black_bars.x = this.world.pivot.x;
+			this.black_bars.y = this.world.pivot.y;
 		}
 
 		this.HealthUpdate = function(){
@@ -401,6 +426,25 @@ Mountaineer.FinalGame.prototype = {
 			this.mountain.chips = [];
 			this.mountain.chip_delay --;
 		}
+		
+		let height = 110;
+
+		this.black_bars = this.add.graphics(0,0);
+		this.black_bars.beginFill(0x000000);
+		this.black_bars.moveTo(0,0);
+		this.black_bars.lineTo(this.stage.width,0);
+		this.black_bars.lineTo(this.stage.width,height);
+		this.black_bars.lineTo(0,height);
+		this.black_bars.endFill();
+
+		let stageHeight = 720;
+
+		this.black_bars.beginFill(0x000000);
+		this.black_bars.moveTo(0,stageHeight );
+		this.black_bars.lineTo(this.stage.width,this.stage.height);
+		this.black_bars.lineTo(this.stage.width,stageHeight-height);
+		this.black_bars.lineTo(0,stageHeight-height);
+		this.black_bars.endFill();
 
 	},
 	switchArms: function() {
@@ -639,7 +683,7 @@ Mountaineer.FinalGame.prototype = {
 		if(this.player.torso.body.static == true){
 			this.init_counter ++;
 			if(this.init_counter > 60 * 2){
-				//this.player.torso.body.static = false;
+				this.player.torso.body.static = false;
 			}
 		}
 		
