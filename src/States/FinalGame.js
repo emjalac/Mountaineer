@@ -345,7 +345,24 @@ Mountaineer.FinalGame.prototype = {
 
 		this.HealthUpdate = function(){
 			//this.snowFilter.uniforms.health.value = ((this.util.pointerPos().y * 8) / this.stage.height);
-			//this.snowFilter.uniforms.health.value += 0.001;
+			if(this.player.firstGripDone){
+				this.snowFilter.uniforms.health.value += 0.001;
+				// If the player is currently gripped
+				if(this.player.active_axe.body.static == true || this.player.inactive_axe.body.static == true){
+					// Increase health depending on arm velocity 
+					let factor = (1/1000) * 0.002;
+					let v1 = this.player.active_axe.body.velocity;
+					let v2 =  this.player.inactive_axe.body.velocity;
+					let total_v = Math.sqrt(v1.x * v1.x + v1.y * v1.y) + Math.sqrt(v2.x * v2.x + v2.y * v2.y)
+					this.snowFilter.uniforms.health.value -= total_v * factor;
+				}
+			}
+
+			if(this.snowFilter.uniforms.health.value > 1)
+				this.snowFilter.uniforms.health.value = 1
+			if(this.snowFilter.uniforms.health.value < 0)
+				this.snowFilter.uniforms.health.value = 0;
+			
 			// Update music with health 
 			let factor = (1 - this.snowFilter.uniforms.health.value);
 			if(factor < 0) factor = 0;
@@ -406,7 +423,7 @@ Mountaineer.FinalGame.prototype = {
 			this.player.inactive_axe.body.static = true;
 			// Apply an impulse upwards!
 			this.player.sustainedUpwards = true;
-			
+			this.player.firstGripDone = true;
 			
 			//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, offX,offY);
 		}
