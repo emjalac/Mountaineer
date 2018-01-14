@@ -151,7 +151,11 @@ Mountaineer.FinalGame.prototype = {
 
 		// Play background music 
 		this.background_music = this.add.audio('ambience');
-		//this.background_music.play(null,null,null,true);
+		this.background_music.play(null,null,null,true);
+
+		// Add sfx
+		this.pickaxe_secure_sfx = this.add.audio('pickaxesecurefeedback');
+		this.pickaxe_strike_sfx = this.add.audio('pickaxestrike');
 
 		// Initialize the snow filter 
 		this.snowFilter = new Phaser.Filter(this.game,null,this.snowShader);
@@ -485,6 +489,7 @@ Mountaineer.FinalGame.prototype = {
 			// Apply an impulse upwards!
 			this.player.sustainedUpwards = true;
 			this.player.firstGripDone = true;
+			this.pickaxe_secure_sfx.play();
 			
 			//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, offX,offY);
 		}
@@ -551,6 +556,8 @@ Mountaineer.FinalGame.prototype = {
 				if(this.mountain.chips.length < 1 && this.mountain.chip_delay <= 0){
 					this.mountain.chips.push({x:body1.x,y:body1.y,depth:depth});
 				}
+				
+				this.pickaxe_strike_sfx.play();
 				
 				//animated rocks/ice falling from chipping at terrain
 			}
