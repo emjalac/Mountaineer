@@ -24,6 +24,7 @@ Mountaineer.Preloader.prototype = {
 			"head",
 			"pickaxe"
 		];
+		var physics = ["pickaxe_body"];
 		
 		var i;
 		for(i=0;i<images.length;i++) {
@@ -31,6 +32,9 @@ Mountaineer.Preloader.prototype = {
 		}
 		for(i=0;i<character_images.length;i++) {
 			this.load.image(character_images[i],"assets/images/character/"+character_images[i]+".png");
+		}
+		for(i=0;i<physics.length;i++){
+			this.load.physics(physics[i],"assets/physics/"+physics[i]+".json");
 		}
 			
 		var spritesheets = [
