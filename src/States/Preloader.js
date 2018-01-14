@@ -55,6 +55,21 @@ Mountaineer.Preloader.prototype = {
 			this.load.spritesheet(sheetName,"assets/sheets/"+sheetName+".png",sheetWidth,sheetHeight,frames);
 		}
 
+		// Load audio 
+		let audio = [
+			'ambience',
+			'crumblingrockparticles',
+			'endgamemusic',
+			'mutedambience',
+			'pickaxesecurefeedback',
+			'pickaxestrike',
+			'pickaxetap'
+		];
+		for(i=0;i<audio.length;i++){
+			let audio_file = "assets/audio/" + audio[i] + ".ogg";
+			this.load.audio(audio[i] ,audio_file);
+		}
+
 		this.load.onFileComplete.add(this.fileComplete, this);
 		this.load.onLoadComplete.add(this.loadComplete, this);
 

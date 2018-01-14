@@ -147,6 +147,10 @@ Mountaineer.FinalGame = function (game) {
 
 Mountaineer.FinalGame.prototype = {
 	create: function () {
+		// Play background music 
+		this.background_music = this.add.audio('ambience');
+		this.background_music.play(null,null,null,true);
+
 		// Initialize the snow filter 
 		this.snowFilter = new Phaser.Filter(this.game,null,this.snowShader);
 		this.snowFilter.uniforms.health = {type:'1f', value: 0.0};
@@ -333,6 +337,10 @@ Mountaineer.FinalGame.prototype = {
 		this.HealthUpdate = function(){
 			//this.snowFilter.uniforms.health.value = ((this.util.pointerPos().y * 8) / this.stage.height);
 			this.snowFilter.uniforms.health.value += 0.001;
+			// Update music with health 
+			let factor = (1 - this.snowFilter.uniforms.health.value);
+			if(factor < 0) factor = 0;
+			this.background_music.volume = Math.pow(factor,2);
 			this.snowFilter.update();
 		}
 
