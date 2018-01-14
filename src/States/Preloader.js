@@ -21,12 +21,13 @@ Mountaineer.Preloader.prototype = {
 			"leg_upperback",
 			"leg_lowerback",
 			"head",
-			"pickaxe"
+			"pickaxe",
 		];
 		var physics = ["pickaxe_body"];
 		
 		//var wall;
 		this.load.image("wall","assets/images/body.png");
+		this.load.image("title_screen","assets/images/title_screen.png");
 
 		var i;
 		// for(i=0;i<images.length;i++) {
@@ -55,9 +56,11 @@ Mountaineer.Preloader.prototype = {
 		this.load.onFileComplete.add(this.fileComplete, this);
 		this.load.onLoadComplete.add(this.loadComplete, this);
 
-		this.loadingScreen = this.add.sprite(0,0,"loading-screen");
-		this.loadingBar = this.add.sprite(295,403,"loading-bar");
+		this.loadingScreen = this.add.sprite(0,0,"loadingscreen");
+		this.loadingBar = this.add.sprite(430,600,"loadingbar");
 		this.loadingBarWidth = this.loadingBar.width;
+
+		this.loadingScreen.scale.setTo(1280/1920);
 
 	},
 	create: function () {

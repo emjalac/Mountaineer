@@ -49,8 +49,8 @@ Mountaineer.Boot.prototype = {
     },
 
     preload: function () {
-       this.load.image("loading-screen","assets/images/loading-screen.png");
-       this.load.image("loading-bar","assets/images/loading-bar.png");
+       this.load.image("loadingscreen","assets/images/loadingscreen.png");
+       this.load.image("loadingbar","assets/images/loadingbar.png");
        this.load.onLoadComplete.add(this.loadComplete, this);
     },
     loadComplete: function(){

@@ -386,7 +386,7 @@ Mountaineer.FinalGame.prototype = {
 				let min = 1500;
 				let max = 4000;
 				let depth = ((len-min) / (max-min)) * 100 ;
-				console.log(len);
+
 				if(this.mountain.chips.length < 1 && this.mountain.chip_delay <= 0){
 					this.mountain.chips.push({x:body1.x,y:body1.y,depth:depth});
 				}
