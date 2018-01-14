@@ -30,6 +30,8 @@ Mountaineer.FinalGame = function (game) {
 		let mountain_graphics = this.add.graphics(0,0);
 		this.mountain.graphics = mountain_graphics;
 		this.mountain.vertices = mountain_vertices;
+		this.mountain.position_x = 0;
+		this.mountain.position_y = 0; //NOTE TO EMMA: CHECK THESE LATER
 
 		mountain_graphics.redraw = function(vertices){
 			this.clear();
@@ -75,7 +77,7 @@ Mountaineer.FinalGame = function (game) {
 Mountaineer.FinalGame.prototype = {
 	create: function () {
 		this.init_offset_x = 2100; //offsets from mountain origin (slightly up and left of top of mountain)
-		this.init_offset_y = 2500;
+		this.init_offset_y = 1500;
 
 		// Enable physics system
 	    this.game.physics.startSystem(Phaser.Physics.BOX2D);
@@ -160,7 +162,7 @@ Mountaineer.FinalGame.prototype = {
 		this.CreateMountain();
 
 		// Define initial axe position
-		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, -50, -50, this.init_offset_x, this.init_offset_y);
+		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.init_offset_x, this.init_offset_y);
 
 		// Set up collision masks
 		// Player collides with: env (cat, mask) -> (01, 10) -> (1, 2)
@@ -241,7 +243,26 @@ Mountaineer.FinalGame.prototype = {
 		this.player.inactive_axe = temp;
 		
 		this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
-		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, -50, -50, this.init_offset_x, this.init_offset_y);
+		//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.init_offset_x, this.init_offset_y);
+
+		this.collideWithNearestVertex();
+
+	},
+	collideWithNearestVertex: function() {
+		let d = 100000000000;
+		let index = null;
+		for(let i=0;i<this.mountain.vertices.length;i+=2){
+			let x = this.mountain.vertices[i];
+			let y = this.mountain.vertices[i+1];
+			let temp_d = this.game.math.distanceSq(x, y, this.player.active_axe.x, this.player.active_axe.y); //distance to active axe squared
+			console.log(temp_d);
+			if (temp_d < d){
+				d = temp_d;
+				index = i;
+			}
+		}
+		console.log("Nearest vertex is"+index);
+		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.mountain.vertices[index], this.mountain.vertices[index+1]);
 
 	},
 	checkCollision: function(){
