@@ -3,6 +3,61 @@ Mountaineer.FinalGame = function (game) {
 	this.player;
 	this.mountain;
 
+	this.snowShader = 
+	`
+	precision mediump float; 
+
+	#define LAYERS 5
+
+	varying vec2 vTextureCoord; 
+	uniform sampler2D uSampler; 
+	uniform float     time;
+	uniform float 	  health; 
+
+	float snowing(vec2 uv){
+	 const mat3 p = mat3(13.323122,23.5112,21.71123,21.1212,28.7312,11.9312,21.8112,14.7212,61.3934);
+
+	 float depth = 0.1;
+	 float width = 0.5;
+	 float speed = 4.0;
+	   
+	   
+	 float acc = 0.0;
+	 float dof = 5.0 * sin(time * 0.1);
+	 for (int i=0; i < LAYERS; i++)
+	 {
+	   float fi = float(i*15);
+	   vec2 q = uv * (1.0 + fi*depth); // Controls size and number 
+	   float w = width * mod(fi*7.238917,1.0)-width*0.1*sin(time*2.+fi);
+	   q += vec2(q.y*w, speed*time / (1.0+fi*depth*0.03));
+	   vec3 n = vec3(floor(q),31.189+fi);
+	   vec3 m = floor(n)*0.00001 + fract(n);
+	   vec3 mp = (31415.9+m) / fract(p*m);
+	   vec3 r = fract(mp);
+	   vec2 s = abs(mod(q,1.0) -0.5 +0.9*r.xy -0.45);
+	   s += 0.01*abs(2.0*fract(10.*q.yx)-1.); // Controls the size
+	   float d = 0.6*max(s.x-s.y,s.x+s.y)+max(s.x,s.y)-.01;
+	   float edge = 0.05 +0.05*min(.5*abs(fi-5.-dof),1.);
+	   acc += smoothstep(edge,-edge,d)*(r.x/(1.+.02*fi*depth));
+	 }
+	 return acc;
+	}
+
+	void main(void){
+		vec2 pos = vTextureCoord;
+		vec4 color = texture2D(uSampler, pos);
+		float snowFactor = snowing(pos);
+
+		color.r += snowFactor * 0.9;
+		color.g += snowFactor;
+		color.b += snowFactor * 1.1;
+
+		color.rgb += health;
+	
+		gl_FragColor = color;
+	}
+	`
+
 	this.CreateMountain = function(){
 		this.mountain = {};
 
@@ -76,6 +131,11 @@ Mountaineer.FinalGame = function (game) {
 
 Mountaineer.FinalGame.prototype = {
 	create: function () {
+		// Initialize the snow filter 
+		this.snowFilter = new Phaser.Filter(this.game,null,this.snowShader);
+		this.snowFilter.uniforms.health = {type:'1f', value: 0.0};
+		this.stage.filters = [this.snowFilter];
+
 		this.init_offset_x = 2500; //offsets from mountain origin (slightly up and left of top of mountain)
 		this.init_offset_y = 4400;
 		this.init_counter = 0;
@@ -250,6 +310,11 @@ Mountaineer.FinalGame.prototype = {
 			this.world.pivot.y += (targetY - this.world.pivot.y) * 0.16;
 		}
 
+		this.HealthUpdate = function(){
+			//this.snowFilter.uniforms.health.value = ((this.util.pointerPos().y * 8) / this.stage.height);
+			this.snowFilter.update();
+		}
+
 	},
 	switchArms: function() {
 		this.player.active_axe.body.velocity.x = 0;
@@ -296,10 +361,11 @@ Mountaineer.FinalGame.prototype = {
 	update: function () {
 		this.UpdateArms();
 		this.CameraUpdate();
+		this.HealthUpdate();
 
 		if(this.player.torso.body.static == true){
 			this.init_counter ++;
-			if(this.init_counter > 60 * 5){
+			if(this.init_counter > 60 * 3){
 				this.player.torso.body.static = false;
 			}
 		}
