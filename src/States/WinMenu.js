@@ -11,7 +11,7 @@ Mountaineer.WinMenu.prototype = {
 		this.ready = false;
 		this.titleScreen = this.add.sprite(0,0,"title_screen");
 		this.titleScreen.scale.setTo(1280/1920);
-	    this.text = this.add.text(this.stage.width/2-100, this.stage.height/2 - 200, "You Won!!", this.style);
+	    // this.text = this.add.text(this.stage.width/2-100, this.stage.height/2 - 200, "Win", this.style);
 	},
 	update: function () {
 			if(this.util.pointerDown()){

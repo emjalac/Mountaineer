@@ -186,10 +186,8 @@ Mountaineer.FinalGame.prototype = {
 		this.background1 = this.add.sprite(this.init_offset_x+150, this.init_offset_y-4900,'background');
 		this.background2 = this.add.sprite(this.init_offset_x-300, this.init_offset_y-4400,'background');
 		this.background3 = this.add.sprite(this.init_offset_x-1500, this.init_offset_y-5700,'background');
-		this.background4 = this.add.sprite(this.init_offset_x+300, this.init_offset_y-2300,'background');
+		this.background4 = this.add.sprite(this.init_offset_x+300, this.init_offset_y-2300,'background_flat');
 		this.background_mountain = this.add.sprite(this.init_offset_x-1300, this.init_offset_y-3350,'backgroundmountain');
-
-		// Add flag
 
 		// Enable physics system
 	    this.game.physics.startSystem(Phaser.Physics.BOX2D);
@@ -231,14 +229,23 @@ Mountaineer.FinalGame.prototype = {
 
 		//torso.body.static = true;
 
-
 		// Create the pickaxes 
 		let pickaxe_front = this.game.add.sprite(500 + this.init_offset_x, 200 + this.init_offset_y, "pickaxe");
 		let pickaxe_back = this.game.add.sprite(250 + this.init_offset_x, 200 + this.init_offset_y, "pickaxe");
 
+		// Create the pickaxes with gems
+		// this.pickaxe_with_gem_front = this.game.add.sprite(500 + this.init_offset_x, 200 + this.init_offset_y, "gem_pickaxe");
+		// this.pickaxe_with_gem_back = this.game.add.sprite(250 + this.init_offset_x, 200 + this.init_offset_y, "gem_pickaxe");
+		//this.pickaxe_with_gem_front.scale.set(1.1);
+		//this.pickaxe_with_gem_back.scale.set(1.1);
+
 		this.game.physics.box2d.enable([torso,arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront]);
 		this.game.physics.box2d.enable([pickaxe_back, pickaxe_front]);
+		// this.game.physics.box2d.enable([this.pickaxe_with_gem_back, this.pickaxe_with_gem_front]);
 		torso.body.restitution = 0.3;
+
+		// this.game.physics.box2d.weldJoint(pickaxe_front, this.pickaxe_with_gem_front);
+  //   	this.game.physics.box2d.weldJoint(pickaxe_back, this.pickaxe_with_gem_back);
 
 		// Create custom collision for pickaxes 
 		pickaxe_back.body.angle = 10;
@@ -260,6 +267,28 @@ Mountaineer.FinalGame.prototype = {
 		this.player.active_axe.y = 200 + this.init_offset_y;
 		this.player.inactive_axe.x = 250 + this.init_offset_x;
 		this.player.inactive_axe.y = 200 + this.init_offset_y;
+
+
+		// Mask stuff
+
+		// this.mask_height = 0;
+		// this.mask_front_x = 500 + this.init_offset_x;
+		// this.mask_front_y = 200 + this.init_offset_y;
+
+		// this.gem_mask_front = this.add.graphics(500 + this.init_offset_x, 200 + this.init_offset_y);
+		// this.gem_mask_back = this.add.graphics(250 + this.init_offset_x, 200 + this.init_offset_y);
+		// //console.log("x, y: "+this.player.active_axe.x+", "this.player.active_axe.y);
+    	
+  //   	this.gem_mask_front.beginFill(0xffffff);
+  //   	this.gem_mask_back.beginFill(0xffffff);
+
+  //   	this.gem_mask_front.drawRect(-100, -100, 1000, this.mask_height); //(x, y, width, height)
+  //   	this.gem_mask_back.drawRect(-100, -100, 1000, this.mask_height);
+
+  //   	this.pickaxe_with_gem_front.mask = this.gem_mask_front;
+  //   	this.pickaxe_with_gem_back.mask = this.gem_mask_back;
+
+
 
 		// Create all the joints 
 		let limits = true;
@@ -290,6 +319,9 @@ Mountaineer.FinalGame.prototype = {
 
 		//  Create our holy mountain 
 		this.CreateMountain();
+
+    	// Add flag
+		this.flag = this.add.sprite(700, -34,'flag');
 
 		// Define initial axe position
 		//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.init_offset_x, this.init_offset_y);
@@ -357,13 +389,24 @@ Mountaineer.FinalGame.prototype = {
 			dx /= dist; 
 			dy /= dist;
 			 
+			this.player.active_axe.body.applyForce(dx * 1000,dy * 1000);
+
 			// Apply angular velocity to get angle to 0 
 			// What's the shortest angle between 0 and this angle?
 			// let angle = Math.atan2(dy,dx) + Math.PI/2;
 			// let shortestAngle = this.util.aDiff(angle,0);
 			// this.player.active_axe.body.angularVelocity = shortestAngle * 5;
 
-			this.player.active_axe.body.applyForce(dx * 1000,dy * 1000);
+			// this.mask_front_x = this.player.active_axe.x - this.world.pivot.x;
+			// this.mask_front_y = this.player.active_axe.y - this.world.pivot.y;
+
+			// this.gem_mask_front.x = this.player.active_axe.x - this.world.pivot.x;
+			// this.gem_mask_front.y = this.player.active_axe.y - this.world.pivot.y;
+
+			// this.gem_mask_back.x = this.player.active_axe.x - this.world.pivot.x;
+			// this.gem_mask_back.y = this.player.active_axe.y - this.world.pivot.y;
+
+
 
 		}
 
@@ -412,7 +455,7 @@ Mountaineer.FinalGame.prototype = {
 			this.snowFilter.update();
 			// Check if game is over
 			if(this.snowFilter.uniforms.health.value >= 1.0){
-				this.shutdown();
+				this.lose();
 			}
 		}
 
@@ -445,6 +488,13 @@ Mountaineer.FinalGame.prototype = {
 		this.black_bars.lineTo(this.stage.width,stageHeight-height);
 		this.black_bars.lineTo(0,stageHeight-height);
 		this.black_bars.endFill();
+
+		this.CheckDestination = function(){
+			var dist = Math.abs(this.flag.x + this.flag.y - this.player.active_axe.x - this.player.active_axe.y);
+			if(dist < 50){
+				this.win();
+			}
+		}
 
 	},
 	switchArms: function() {
@@ -493,10 +543,22 @@ Mountaineer.FinalGame.prototype = {
 			//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, offX,offY);
 		}
 
-		//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, this.init_offset_x, this.init_offset_y);
+		// this.updateMaskHeight();
+
+		
 
 
 	},
+	// updateMaskHeight: function() {
+	// 	this.gem_mask_front.beginFill(0xffffff);
+	// 	this.gem_mask_back.beginFill(0xffffff);
+
+ //    	this.gem_mask_front.drawRect(this.mask_front_x, this.mask_front_y, 10000, this.mask_height); //(x, y, width, height)
+ //    	this.gem_mask_back.drawRect(this.pickaxe_with_gem_back.x, this.pickaxe_with_gem_back.y, 10000, this.mask_height);
+
+ //    	this.pickaxe_with_gem_front.mask = this.gem_mask_front;
+ //    	this.pickaxe_with_gem_back.mask = this.gem_mask_back;
+	// },
 	getNearestVertex: function(axe) {
 		let min_dist = null;
 		let index = null;
@@ -666,6 +728,7 @@ Mountaineer.FinalGame.prototype = {
 		this.CameraUpdate();
 		this.HealthUpdate();
 		this.MountainUpdate();
+		this.CheckDestination();
 
 		if(this.player.sustainedUpwards){
 			// Move away from pickaxe 
@@ -698,7 +761,14 @@ Mountaineer.FinalGame.prototype = {
 		this.world.scale.setTo(1,1);
 		this.snowFilter.destroy();
 		this.stage.filters = null;
+	},
+	lose: function (){
+		this.shutdown();
 		this.state.start('GameOverMenu');
+	},
+	win: function() {
+		this.shutdown();
+		this.state.start('WinMenu');
 	}
 };
 
