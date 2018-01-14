@@ -22,7 +22,8 @@ Mountaineer.Preloader.prototype = {
 			"leg_upperback",
 			"leg_lowerback",
 			"head",
-			"pickaxe"
+			"pickaxe",
+			"pickaxe20"
 		];
 		var physics = ["pickaxe_body"];
 		

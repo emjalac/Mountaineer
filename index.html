@@ -6,6 +6,9 @@
 	<script src="lib/phaser.min.js"></script>
 	<script src="lib/box2d-plugin-full.js"></script>
 	<script src="https://unpkg.com/earcut@2.1.1/dist/earcut.min.js"></script>
+	<!-- Custome classes -->
+	<script src="src/Filters/Glow.js"></script>
+	
 	<!-- Include all the states -->
 	<script src="src/States/Boot.js"></script>
 	<script src="src/States/Preloader.js"></script>
@@ -38,7 +41,7 @@
 
 window.onload = function() {
 	// Initialize our game and dimensions
-	var game = new Phaser.Game(1280, 720, Phaser.AUTO, 'game');
+	var game = new Phaser.Game(1280, 720, Phaser.AUTO, Phaser.WEBGL, 'game');
 
 	// Tell Phaser about all our states
 	game.state.add('Boot', Mountaineer.Boot);
