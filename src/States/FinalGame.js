@@ -332,6 +332,7 @@ Mountaineer.FinalGame.prototype = {
 
 		this.HealthUpdate = function(){
 			//this.snowFilter.uniforms.health.value = ((this.util.pointerPos().y * 8) / this.stage.height);
+			this.snowFilter.uniforms.health.value += 0.001;
 			this.snowFilter.update();
 		}
 
