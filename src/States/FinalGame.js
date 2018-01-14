@@ -365,8 +365,8 @@ Mountaineer.FinalGame.prototype = {
 		this.player.inactive_axe = temp;		
 
 		// Destroy old joint if it exists
-		if(this.player.axe_joint){
-			this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
+		if(this.player.active_axe.body.static == true){
+			this.player.active_axe.body.static = false;
 		}
 
 		// New joint only created if player is close enough 
@@ -377,6 +377,10 @@ Mountaineer.FinalGame.prototype = {
 			let offX = this.mountain.body.x - this.mountain.vertices[vertIndex];
 			let offY = this.mountain.body.y - this.mountain.vertices[vertIndex+1];
 			this.player.inactive_axe.body.static = true;
+			// Apply an impulse upwards!
+			this.player.sustainedUpwards = true;
+			
+			
 			//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, 0, 0, offX,offY);
 		}
 
@@ -547,6 +551,10 @@ Mountaineer.FinalGame.prototype = {
 		this.CameraUpdate();
 		this.HealthUpdate();
 		this.MountainUpdate();
+
+		if(this.player.sustainedUpwards){
+			this.player.head.body.velocity.y = -1000;
+		}
 
 		if(this.player.torso.body.static == true){
 			this.init_counter ++;
