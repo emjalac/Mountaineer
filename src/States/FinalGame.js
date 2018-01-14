@@ -167,9 +167,6 @@ Mountaineer.FinalGame.prototype = {
 		this.background2 = this.add.sprite(this.init_offset_x-300, this.init_offset_y-4400,'background');
 		this.background3 = this.add.sprite(this.init_offset_x-1500, this.init_offset_y-5700,'background');
 		this.background_mountain = this.add.sprite(this.init_offset_x-1300, this.init_offset_y-3350,'backgroundmountain');
-		// this.world.scale.setTo(0.05,0.05);
-		// this.world.pivot.y += 10000;
-		// this.world.pivot.x += 10000;
 
 		// Enable physics system
 	    this.game.physics.startSystem(Phaser.Physics.BOX2D);
