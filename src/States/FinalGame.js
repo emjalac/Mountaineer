@@ -438,7 +438,8 @@ Mountaineer.FinalGame.prototype = {
 		this.CheckDestination = function(){
 			var dist = Math.abs(this.flag.x + this.flag.y - this.player.active_axe.x - this.player.active_axe.y);
 			if(dist < 50){
-				this.win();
+				this.time.events.add(Phaser.Timer.SECOND * 2, this.win , this);
+				// this.win();
 			}
 		}
 
@@ -714,6 +715,7 @@ Mountaineer.FinalGame.prototype = {
 	},
 	win: function() {
 		this.shutdown();
+		this.player.torso.body.mass = 8000;
 		this.state.start('WinMenu');
 	}
 };
