@@ -74,6 +74,9 @@ Mountaineer.FinalGame = function (game) {
 
 Mountaineer.FinalGame.prototype = {
 	create: function () {
+		this.init_offset_x = 2100; //offsets from mountain origin (slightly up and left of top of mountain)
+		this.init_offset_y = 2500;
+
 		// Enable physics system
 	    this.game.physics.startSystem(Phaser.Physics.BOX2D);
     	this.game.physics.box2d.gravity.y = 500;
@@ -82,21 +85,21 @@ Mountaineer.FinalGame.prototype = {
 
     	// Create the player
     	this.player = {};
-    	let torso = this.game.add.sprite(500,300,"torso");
+    	let torso = this.game.add.sprite(500 + this.init_offset_x, 300 + this.init_offset_y, "torso");
     	torso.enableBody = true;
     	this.game.physics.box2d.enable(torso);
     	torso.body.restitution = 0.3;
     	this.player.torso = torso;
 
-    	let arm_upperfront = this.game.add.sprite(250, 245, "arm_upperfront");
-		let arm_upperback = this.game.add.sprite(250, 245, "arm_upperback");
-		let arm_lowerfront = this.game.add.sprite(250, 245, "arm_lowerfront");
-		let arm_lowerback = this.game.add.sprite(250, 245, "arm_lowerback");
-		let leg_upperfront = this.game.add.sprite(250, 245, "leg_upperfront");
-		let leg_upperback = this.game.add.sprite(250, 245, "leg_upperback");
-		let leg_lowerfront = this.game.add.sprite(250, 245, "leg_lowerfront");
-		let leg_lowerback = this.game.add.sprite(250, 245, "leg_lowerback");
-		let head = this.game.add.sprite(250, 200, "head");
+    	let arm_upperfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "arm_upperfront");
+		let arm_upperback = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "arm_upperback");
+		let arm_lowerfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "arm_lowerfront");
+		let arm_lowerback = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "arm_lowerback");
+		let leg_upperfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "leg_upperfront");
+		let leg_upperback = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "leg_upperback");
+		let leg_lowerfront = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "leg_lowerfront");
+		let leg_lowerback = this.game.add.sprite(250 + this.init_offset_x, 245 + this.init_offset_y, "leg_lowerback");
+		let head = this.game.add.sprite(250 + this.init_offset_x, 200 + this.init_offset_y, "head");
 
 		this.player.arm_upperfront = arm_upperfront;
 		this.player.arm_upperback = arm_upperback;
@@ -112,8 +115,8 @@ Mountaineer.FinalGame.prototype = {
 
 
 		// Create the pickaxes 
-		let pickaxe_front = this.game.add.sprite(500, 200, "pickaxe");
-		let pickaxe_back = this.game.add.sprite(250, 200, "pickaxe");
+		let pickaxe_front = this.game.add.sprite(500 + this.init_offset_x, 200 + this.init_offset_y, "pickaxe");
+		let pickaxe_back = this.game.add.sprite(250 + this.init_offset_x, 200 + this.init_offset_y, "pickaxe");
 
 		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront]);
 		this.game.physics.box2d.enable([pickaxe_back, pickaxe_front]);
@@ -128,11 +131,10 @@ Mountaineer.FinalGame.prototype = {
 
 		this.player.active_axe = pickaxe_front;
 		this.player.inactive_axe = pickaxe_back;
-		this.player.active_axe.x = 250;
-		this.player.active_axe.y = 200;
-		this.player.inactive_axe.x = 250;
-		this.player.inactive_axe.y = 200;
-
+		this.player.active_axe.x = 500 + this.init_offset_x;
+		this.player.active_axe.y = 200 + this.init_offset_y;
+		this.player.inactive_axe.x = 250 + this.init_offset_x;
+		this.player.inactive_axe.y = 200 + this.init_offset_y;
 
 		// Create all the joints 
 		let limits = true;
@@ -156,6 +158,9 @@ Mountaineer.FinalGame.prototype = {
 
 		//  Create our holy mountain 
 		this.CreateMountain();
+
+		// Define initial axe position
+		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, -50, -50, this.init_offset_x, this.init_offset_y);
 
 		// Set up collision masks
 		// Player collides with: env (cat, mask) -> (01, 10) -> (1, 2)
@@ -195,6 +200,10 @@ Mountaineer.FinalGame.prototype = {
 		pickaxe_back.body.setCollisionMask(this.PLAYER_MASK);
 		this.mountain.body.setCollisionCategory(this.ENV_CAT);
 
+		// Set up call back function for pickaxe colliding with mountain
+		pickaxe_front.body.setBodyContactCallback(this.mountain.body, this.checkCollision, this);
+		pickaxe_back.body.setBodyContactCallback(this.mountain.body, this.checkCollision, this);
+
 		// Arm switching & welding 
 		this.game.input.onDown.add(this.switchArms, this);
 
@@ -231,10 +240,28 @@ Mountaineer.FinalGame.prototype = {
 		this.player.active_axe = this.player.inactive_axe;
 		this.player.inactive_axe = temp;
 		
+		this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
+		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain, -50, -50, this.init_offset_x, this.init_offset_y);
+
+	},
+	checkCollision: function(){
+		console.log("You hit the mountain");
+
+		//chip away at terrain
+
+		//animated rocks/ice falling from chipping at terrain
+
+
+
+
 	},
 	update: function () {
 		this.UpdateArms();
 		this.CameraUpdate();
+	},
+	render: function () {
+		// this.game.debug.box2dWorld();
+  //   	this.game.physics.box2d.debugDraw.joints = true;
 	},
 	destroy: function () {
 
