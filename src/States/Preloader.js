@@ -9,7 +9,6 @@ Mountaineer.Preloader = function (game) {
 
 Mountaineer.Preloader.prototype = {
 	preload: function () {
-		var images = ["bomb"];
 		// Climber's body
 		var character_images = [
 			"torso",
@@ -24,13 +23,20 @@ Mountaineer.Preloader.prototype = {
 			"head",
 			"pickaxe"
 		];
+		var physics = ["pickaxe_body"];
 		
+		//var wall;
+		this.load.image("wall","assets/images/body.png");
+
 		var i;
-		for(i=0;i<images.length;i++) {
-			this.load.image(images[i],"assets/images/"+images[i]+".png");
-		}
+		// for(i=0;i<images.length;i++) {
+		// 	this.load.image(images[i],"assets/images/"+images[i]+".png");
+		// }
 		for(i=0;i<character_images.length;i++) {
 			this.load.image(character_images[i],"assets/images/character/"+character_images[i]+".png");
+		}
+		for(i=0;i<physics.length;i++){
+			this.load.physics(physics[i],"assets/physics/"+physics[i]+".json");
 		}
 			
 		var spritesheets = [
