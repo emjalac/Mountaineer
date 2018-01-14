@@ -3,6 +3,7 @@ Mountaineer.Game = function (game) {
 	this.util = new Util(game);
 	this.dragging = false;
 	this.player = {};
+	this.mountain = {};
 
 };
 
@@ -38,6 +39,7 @@ Mountaineer.Game.prototype = {
     	var leg_lowerback;
 		var head;
 		var pickaxe;
+		//var wall;
 	
 		//Environment
 		environment = this.game.add.group();
@@ -46,13 +48,18 @@ Mountaineer.Game.prototype = {
 		this.game.physics.box2d.enable(ground);
 		ground.body.static = true;
 
+		this.mountain.joint = environment.create(0, 400, "wall");
+		this.game.physics.box2d.enable(this.mountain.joint);
+		this.mountain.joint.body.static = true;
+
 		// Player
 		player = this.game.add.group();
 		torso = player.create(200, 300, "torso");
 		torso.enableBody = true;
 		this.game.physics.box2d.enable(torso);
 		torso.body.restitution = 0.3;
-		torso.body.static = true;
+		//torso.body.static = true;
+		this.player.torso = torso;
 
 		arm_upperfront = this.game.add.sprite(250, 245, "arm_upperfront");
 		arm_upperback = this.game.add.sprite(250, 245, "arm_upperback");
@@ -64,7 +71,7 @@ Mountaineer.Game.prototype = {
 		leg_lowerback = this.game.add.sprite(250, 245, "leg_lowerback");
 		head = this.game.add.sprite(250, 200, "head");
 
-		pickaxe_front = this.game.add.sprite(250, 200, "pickaxe");
+		pickaxe_front = this.game.add.sprite(500, 200, "pickaxe");
 		pickaxe_back = this.game.add.sprite(250, 200, "pickaxe");
 		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront, pickaxe_back, pickaxe_front]);
 		pickaxe_back.body.angle = 90;
@@ -77,6 +84,11 @@ Mountaineer.Game.prototype = {
 		this.player.active_axe.y = 200;
 		this.player.inactive_axe.x = 250;
 		this.player.inactive_axe.y = 200;
+
+		//this.player.torso_move_speed_min = 10;
+
+		//Define initial axe position
+		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain.joint);
 
 		var limits = true;
 
@@ -118,6 +130,7 @@ Mountaineer.Game.prototype = {
 		pickaxe_front.body.setCollisionCategory(this.PLAYER_CAT);
 		pickaxe_back.body.setCollisionCategory(this.PLAYER_CAT);
 		ground.body.setCollisionCategory(this.ENV_CAT);
+		
 
 		torso.body.setCollisionMask(this.PLAYER_MASK);
 		arm_upperfront.body.setCollisionMask(this.PLAYER_MASK);
@@ -147,6 +160,8 @@ Mountaineer.Game.prototype = {
 		var axe_to_mouse_dst_x;
 		var axe_to_mouse_dst_y;
 
+		var cur_mouse_x =
+
 		mouse_x = this.util.pointerPos().x;
 		mouse_y = this.util.pointerPos().y;
 
@@ -159,23 +174,38 @@ Mountaineer.Game.prototype = {
 		this.player.active_axe.body.velocity.x = 10*axe_to_mouse_dst_x;
 		this.player.active_axe.body.velocity.y = 10*axe_to_mouse_dst_y;
 
+		//this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain.joint);
+
+		// if (Math.abs(this.player.active_axe.body.velocity.x) > this.player.torso_move_speed_min){
+		// 	this.player.torso.body.velocity.x = axe_to_mouse_dst_x;
+		// }
+
+		// if (Math.abs(this.player.active_axe.body.velocity.y) > this.player.torso_move_speed_min){
+		// 	this.player.torso.body.velocity.y = axe_to_mouse_dst_y;
+		// }
+
 		
 	}, 
 	render: function(){
-    	this.game.debug.box2dWorld();
-    	this.game.physics.box2d.debugDraw.joints = true;
+    	//this.game.debug.box2dWorld();
+    	//this.game.physics.box2d.debugDraw.joints = true;
 	
 	}, 
 	shutdown: function(){
 	},
 	switchArms: function() {
-		this.player.active_arm.body.velocity.x = 0;
-		this.player.active_arm.body.velocity.y = 0;
 
-		var temp = this.player.active_arm;
+		this.player.active_axe.body.velocity.x = 0;
+		this.player.active_axe.body.velocity.y = 0;
+		this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
+		console.log(this.player.axe_joint);
+		var temp = this.player.active_axe;
 
-		this.player.active_arm = this.player.inactive_arm;
-		this.player.inactive_arm = temp;
+		this.player.active_axe = this.player.inactive_axe;
+		this.player.inactive_axe = temp;
+
+		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain.joint);
+
 
 
 
