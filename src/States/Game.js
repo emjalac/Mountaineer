@@ -38,8 +38,8 @@ Mountaineer.Game.prototype = {
     	var leg_lowerfront;
     	var leg_lowerback;
 		var head;
-		var pickaxe;
-		//var wall;
+		var pickaxe_back;
+		var pickaxe_front;
 	
 		//Environment
 		environment = this.game.add.group();
@@ -73,10 +73,15 @@ Mountaineer.Game.prototype = {
 
 		pickaxe_front = this.game.add.sprite(500, 200, "pickaxe");
 		pickaxe_back = this.game.add.sprite(250, 200, "pickaxe");
-		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront, pickaxe_back, pickaxe_front]);
+		this.game.physics.box2d.enable([arm_upperfront, arm_lowerfront, arm_lowerback, arm_upperback, head, leg_lowerback, leg_upperback, leg_upperfront, leg_lowerfront]);
+		this.game.physics.box2d.enable([pickaxe_back, pickaxe_front]);
 		pickaxe_back.body.angle = 90;
 		pickaxe_front.body.angle = 90;
-		console.log(pickaxe_front);
+		pickaxe_back.body.clearFixtures();
+		pickaxe_front.body.clearFixtures();
+		pickaxe_back.body.setPolygon([27-130,4-110 , 61-130,3-110 , 51-130,77-110 , 71-130,87-110 , 73-130,107-110 , 56-130,119-110 , 67-130,217-110 , 28-130,117-110 , 3-130,99-110 , 31-130,80-110]);
+		pickaxe_front.body.setPolygon([27-130,4-110 , 61-130,3-110 , 51-130,77-110 , 71-130,87-110 , 73-130,107-110 , 56-130,119-110 , 67-130,217-110 , 28-130,117-110 , 3-130,99-110 , 31-130,80-110]);
+
 
 		this.player.active_axe = pickaxe_front;
 		this.player.inactive_axe = pickaxe_back;
@@ -107,7 +112,6 @@ Mountaineer.Game.prototype = {
 		this.game.physics.box2d.revoluteJoint(leg_upperfront, leg_lowerfront, 0, 80, 5, -75, 5, 10, true, -140, 10, limits);
 		this.game.physics.box2d.revoluteJoint(leg_upperback, leg_lowerback, 0, 80, 5, -75, 5, 10, true, -140, 10, limits);
 
-		
 		// Set up collision masks
 		// Player collides with: env (cat, mask) -> (01, 10) -> (1, 2)
 		// Environment collides with: env, player (cat, mask) -> (10, 11) -> (2, 3)
@@ -194,7 +198,6 @@ Mountaineer.Game.prototype = {
 	shutdown: function(){
 	},
 	switchArms: function() {
-
 		this.player.active_axe.body.velocity.x = 0;
 		this.player.active_axe.body.velocity.y = 0;
 		this.game.physics.box2d.world.DestroyJoint(this.player.axe_joint);
@@ -205,8 +208,6 @@ Mountaineer.Game.prototype = {
 		this.player.inactive_axe = temp;
 
 		this.player.axe_joint = this.game.physics.box2d.weldJoint(this.player.inactive_axe, this.mountain.joint);
-
-
 
 
 	},
