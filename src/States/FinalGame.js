@@ -437,7 +437,8 @@ Mountaineer.FinalGame.prototype = {
 
 		this.CheckDestination = function(){
 			var dist = Math.abs(this.flag.x + this.flag.y - this.player.active_axe.x - this.player.active_axe.y);
-			if(dist < 20){
+			console.log(dist);
+			if(dist < 50){
 				this.win();
 			}
 		}
