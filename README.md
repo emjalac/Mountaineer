@@ -10,3 +10,7 @@ python -m http.server
 ```
 
 The game is now running on http://localhost:8000/ !
+
+## How to Play
+
+Check out the game at: https://cheesysnow.itch.io/mountaineer
